@@ -358,7 +358,7 @@ func handleError(err error) {
 func runCommand(command string, args []string) {
 	log.Printf("Running command '%v %v'...", command, strings.Join(args, " "))
 	cmd := exec.Command(command, args...)
-	//cmd.Dir = "/estafette-work"
+	cmd.Dir = "/estafette-work"
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()
