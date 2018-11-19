@@ -3,7 +3,7 @@
 	"ignore": "test",
 	"package": [
 		{
-			"checksumSHA1": "mO3BFcsToZhAkvKS3hQOzmFSzMo=",
+			"checksumSHA1": "nT6HLNmtYBj+rTHjOErbn/2ePCI=",
 			"path": "github.com/alecthomas/kingpin",
 			"revision": "947dcec5ba9c011838740e680966fd7087a71d0d",
 			"revisionTime": "2017-12-17T18:08:21Z",
@@ -35,7 +35,7 @@
 			"revisionTime": "2018-08-30T19:11:22Z"
 		},
 		{
-			"checksumSHA1": "QfZes6pi0kobuxqvaaHJqPhbuo4=",
+			"checksumSHA1": "qr4xHfnDNHM/XK7IZtZDZEoCkBA=",
 			"path": "github.com/estafette/estafette-ci-contracts",
 			"revision": "d8939271492b48c1828efc6b21cd9d633a8128f1",
 			"revisionTime": "2018-08-31T09:07:35Z",
@@ -57,5 +57,5 @@
 			"versionExact": "v1.1.4"
 		}
 	],
-	"rootPath": "github.com/estafette/estafette-extension-docker"
+	"rootPath": "github.com/estafette/estafette-extension-dotnet"
 }
