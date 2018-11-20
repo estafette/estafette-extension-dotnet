@@ -47,6 +47,25 @@ stages:
 releases:
   dev:
     stages:
+      build:
+        image: golang:1.11.2-alpine3.8
+        workDir: /go/src/github.com/estafette/${ESTAFETTE_LABEL_APP}
+        env:
+          CGO_ENABLED: 0
+          GOOS: linux
+        commands:
+        - go build -a -installsuffix cgo -ldflags "-X main.version=${ESTAFETTE_BUILD_VERSION} -X main.revision=${ESTAFETTE_GIT_REVISION} -X main.branch=${ESTAFETTE_GIT_BRANCH} -X main.buildDate=${ESTAFETTE_BUILD_DATETIME}" -o ./publish/${ESTAFETTE_LABEL_APP} .
+
+      bake:
+        image: extensions/docker:stable
+        action: build
+        container: dotnet
+        repositories:
+        - extensions
+        path: ./publish
+        copy:
+        - Dockerfile
+
       push-container-image:
         image: extensions/docker:stable
         action: push
@@ -67,6 +86,25 @@ releases:
 
   "2.1":
     stages:
+      build:
+        image: golang:1.11.2-alpine3.8
+        workDir: /go/src/github.com/estafette/${ESTAFETTE_LABEL_APP}
+        env:
+          CGO_ENABLED: 0
+          GOOS: linux
+        commands:
+        - go build -a -installsuffix cgo -ldflags "-X main.version=${ESTAFETTE_BUILD_VERSION} -X main.revision=${ESTAFETTE_GIT_REVISION} -X main.branch=${ESTAFETTE_GIT_BRANCH} -X main.buildDate=${ESTAFETTE_BUILD_DATETIME}" -o ./publish/${ESTAFETTE_LABEL_APP} .
+
+      bake:
+        image: extensions/docker:stable
+        action: build
+        container: dotnet
+        repositories:
+        - extensions
+        path: ./publish
+        copy:
+        - Dockerfile
+
       push-container-image:
         image: extensions/docker:stable
         action: push
