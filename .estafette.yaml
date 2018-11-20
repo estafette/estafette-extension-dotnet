@@ -46,6 +46,7 @@ stages:
 
 releases:
   dev:
+    clone: true
     stages:
       build:
         image: golang:1.11.2-alpine3.8
@@ -85,6 +86,7 @@ releases:
           status == 'failed'
 
   "2.1":
+    clone: true
     stages:
       build:
         image: golang:1.11.2-alpine3.8
