@@ -23,7 +23,6 @@ stages:
       CGO_ENABLED: 0
       GOOS: linux
     commands:
-    - go test `go list ./... | grep -v /vendor/`
     - go build -a -installsuffix cgo -ldflags "-X main.version=${ESTAFETTE_BUILD_VERSION} -X main.revision=${ESTAFETTE_GIT_REVISION} -X main.branch=${ESTAFETTE_GIT_BRANCH} -X main.buildDate=${ESTAFETTE_BUILD_DATETIME}" -o ./publish/${ESTAFETTE_LABEL_APP} .
 
   bake:
@@ -55,7 +54,7 @@ stages:
       status == 'failed'
 
 releases:
-  beta:
+  2.1:
     stages:
       tag-container-image:
         image: extensions/docker:stable
@@ -64,28 +63,7 @@ releases:
         repositories:
         - extensions
         tags:
-        - beta
-
-      slack-notify:
-        image: extensions/slack-build-status:dev
-        workspace: estafette
-        channels:
-        - '#build-status'
-        when:
-          status == 'succeeded' ||
-          status == 'failed'
-
-  stable:
-    stages:
-      tag-container-image:
-        image: extensions/docker:stable
-        action: tag
-        container: dotnet
-        repositories:
-        - extensions
-        tags:
-        - stable
-        - latest
+        - 2.1
 
       slack-notify:
         image: extensions/slack-build-status:dev
