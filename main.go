@@ -25,7 +25,7 @@ var (
 	// flags
 	action            = kingpin.Flag("action", "Any of the following actions: restore, build, test, unit-test, integration-test, publish, pack, push-nuget").Envar("ESTAFETTE_EXTENSION_ACTION").String()
 	configuration     = kingpin.Flag("configuration", "The build configuration.").Envar("ESTAFETTE_EXTENSION_CONFIGURATION").Default("Release").String()
-	versionSuffix     = kingpin.Flag("versionSuffix", "The build configuration.").Envar("ESTAFETTE_BUILD_VERSION_SUFFIX").String()
+	versionSuffix     = kingpin.Flag("versionSuffix", "The build configuration.").Envar("ESTAFETTE_EXTENSION_VERSION_SUFFIX").String()
 	project           = kingpin.Flag("project", "The path to the project for which the tests/build should be run.").Envar("ESTAFETTE_EXTENSION_PROJECT").String()
 	runtimeID         = kingpin.Flag("runtimeId", "The publish runtime.").Envar("ESTAFETTE_EXTENSION_RUNTIME_ID").Default("linux-x64").String()
 	forceRestore      = kingpin.Flag("forceRestore", "Execute the restore on every action.").Envar("ESTAFETTE_EXTENSION_FORCE_RESTORE").Default("false").Bool()
