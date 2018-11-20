@@ -54,7 +54,7 @@ stages:
       status == 'failed'
 
 releases:
-  2.1:
+  "2.1":
     stages:
       tag-container-image:
         image: extensions/docker:stable
@@ -63,7 +63,7 @@ releases:
         repositories:
         - extensions
         tags:
-        - 2.1
+        - "2.1"
 
       slack-notify:
         image: extensions/slack-build-status:dev
