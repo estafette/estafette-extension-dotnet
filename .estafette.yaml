@@ -35,15 +35,6 @@ stages:
     copy:
     - Dockerfile
 
-  push-to-docker-hub:
-    image: extensions/docker:stable
-    action: push
-    container: dotnet
-    repositories:
-    - extensions
-    tags:
-    - dev
-
   slack-notify:
     image: extensions/slack-build-status:dev
     workspace: estafette
@@ -54,11 +45,31 @@ stages:
       status == 'failed'
 
 releases:
+  dev:
+    stages:
+      push-container-image:
+        image: extensions/docker:stable
+        action: push
+        container: dotnet
+        repositories:
+        - extensions
+        tags:
+        - dev
+
+      slack-notify:
+        image: extensions/slack-build-status:dev
+        workspace: estafette
+        channels:
+        - '#build-status'
+        when:
+          status == 'succeeded' ||
+          status == 'failed'
+
   "2.1":
     stages:
-      tag-container-image:
+      push-container-image:
         image: extensions/docker:stable
-        action: tag
+        action: push
         container: dotnet
         repositories:
         - extensions
