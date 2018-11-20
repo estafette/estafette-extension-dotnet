@@ -27,3 +27,5 @@ A full build and publish process of an API looks like this.
     image: extensions/dotnet:stable
     action: publish
 ```
+
+## Actions
