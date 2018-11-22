@@ -57,7 +57,6 @@ func main() {
 	log.Printf("Starting estafette-extension-dotnet version %v...", version)
 
 	// set defaults
-	gitBranch := os.Getenv("ESTAFETTE_GIT_BRANCH")
 	builtInBuildVersion := os.Getenv("ESTAFETTE_BUILD_VERSION")
 	if *buildVersion == "" {
 		*buildVersion = builtInBuildVersion
