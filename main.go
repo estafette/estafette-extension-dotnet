@@ -58,8 +58,9 @@ func main() {
 
 	// set defaults
 	gitBranch := os.Getenv("ESTAFETTE_GIT_BRANCH")
+	versionPatch := os.Getenv("ESTAFETTE_BUILD_VERSION_PATCH")
 	if *versionSuffix == "" {
-		*versionSuffix = os.Getenv("ESTAFETTE_BUILD_VERSION_PATCH")
+		*versionSuffix = versionPatch
 	}
 
 	solutionName, _ := getSolutionName()
@@ -159,7 +160,7 @@ func main() {
 		if *outputFolder == "" {
 			// A default sensible choice is to put the publish output directly under the working folder in a folder called "publish", so that its relative path doesn't depend on the project name.
 			// This makes it easier to use in a generic way in followup steps of the build.
-			output = filepath.Join(workingDir, "publish")
+			*outputFolder = filepath.Join(workingDir, "publish")
 		}
 
 		args := []string{
