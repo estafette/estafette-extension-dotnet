@@ -26,7 +26,7 @@ var (
 	// flags
 	action                     = kingpin.Flag("action", "Any of the following actions: restore, build, test, unit-test, integration-test, publish, pack, push-nuget").Envar("ESTAFETTE_EXTENSION_ACTION").String()
 	configuration              = kingpin.Flag("configuration", "The build configuration.").Envar("ESTAFETTE_EXTENSION_CONFIGURATION").Default("Release").String()
-	versionSuffix              = kingpin.Flag("versionSuffix", "The build configuration.").Envar("ESTAFETTE_EXTENSION_VERSION_SUFFIX").String()
+	buildVersion               = kingpin.Flag("buildVersion", "The build version.").Envar("ESTAFETTE_EXTENSION_BUILD_VERSION").String()
 	project                    = kingpin.Flag("project", "The path to the project for which the tests/build should be run.").Envar("ESTAFETTE_EXTENSION_PROJECT").String()
 	runtimeID                  = kingpin.Flag("runtimeId", "The publish runtime.").Envar("ESTAFETTE_EXTENSION_RUNTIME_ID").Default("linux-x64").String()
 	forceRestore               = kingpin.Flag("forceRestore", "Execute the restore on every action.").Envar("ESTAFETTE_EXTENSION_FORCE_RESTORE").Default("false").Bool()
@@ -58,9 +58,9 @@ func main() {
 
 	// set defaults
 	gitBranch := os.Getenv("ESTAFETTE_GIT_BRANCH")
-	versionPatch := os.Getenv("ESTAFETTE_BUILD_VERSION_PATCH")
-	if *versionSuffix == "" {
-		*versionSuffix = versionPatch
+	builtInBuildVersion := os.Getenv("ESTAFETTE_BUILD_VERSION")
+	if *buildVersion == "" {
+		*buildVersion = builtInBuildVersion
 	}
 
 	solutionName, _ := getSolutionName()
@@ -108,8 +108,8 @@ func main() {
 			*configuration,
 		}
 
-		if *versionSuffix != "" {
-			args = append(args, "--version-suffix", *versionSuffix)
+		if *buildVersion != "" {
+			args = append(args, fmt.Sprintf("/p:Version=%s", *buildVersion))
 		}
 
 		if !*forceRestore {
@@ -174,8 +174,8 @@ func main() {
 			*project,
 		}
 
-		if *versionSuffix != "" {
-			args = append(args, "--version-suffix", *versionSuffix)
+		if *buildVersion != "" {
+			args = append(args, fmt.Sprintf("/p:Version=%s", *buildVersion))
 		}
 
 		if !*forceRestore {
@@ -206,14 +206,8 @@ func main() {
 			*configuration,
 		}
 
-		if *versionSuffix != "" {
-			args = append(args, "--version-suffix", *versionSuffix)
-		} else {
-			if gitBranch != "master" {
-				patchVersionWithLeadingZeros := fmt.Sprintf("%05s", versionPatch)
-
-				args = append(args, "--version-suffix", fmt.Sprintf("%s%s", patchVersionWithLeadingZeros, gitBranch))
-			}
+		if *buildVersion != "" {
+			args = append(args, fmt.Sprintf("/p:Version=%s", *buildVersion))
 		}
 
 		if !*forceRestore {
