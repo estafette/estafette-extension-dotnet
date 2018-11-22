@@ -302,7 +302,7 @@ func main() {
 
 			argsForPackage = append(argsForPackage, files[i])
 
-			runCommand("dotnet", argsForPackage)
+			runCommandWithoutPrinting("dotnet", argsForPackage)
 		}
 
 	default:
@@ -381,6 +381,10 @@ func handleError(err error) {
 
 func runCommand(command string, args []string) {
 	log.Printf("Running command '%v %v'...", command, strings.Join(args, " "))
+	runCommandWithoutPrinting(command, args)
+}
+
+func runCommandWithoutPrinting(command string, args []string) {
 	cmd := exec.Command(command, args...)
 	cmd.Dir = "/estafette-work"
 	cmd.Stdout = os.Stdout
