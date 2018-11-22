@@ -45,7 +45,7 @@ stages:
       status == 'failed'
 
 releases:
-  dev:
+  "2.1-dev":
     clone: true
     stages:
       build:
@@ -74,7 +74,7 @@ releases:
         repositories:
         - extensions
         tags:
-        - dev
+        - ${ESTAFETTE_RELEASE_NAME}
 
       slack-notify:
         image: extensions/slack-build-status:dev
@@ -85,7 +85,7 @@ releases:
           status == 'succeeded' ||
           status == 'failed'
 
-  "2.1":
+  "2.1-stable":
     clone: true
     stages:
       build:
@@ -114,7 +114,7 @@ releases:
         repositories:
         - extensions
         tags:
-        - "2.1"
+        - ${ESTAFETTE_RELEASE_NAME}
 
       slack-notify:
         image: extensions/slack-build-status:dev
