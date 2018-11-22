@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -23,16 +24,18 @@ var (
 
 var (
 	// flags
-	action            = kingpin.Flag("action", "Any of the following actions: restore, build, test, unit-test, integration-test, publish, pack, push-nuget").Envar("ESTAFETTE_EXTENSION_ACTION").String()
-	configuration     = kingpin.Flag("configuration", "The build configuration.").Envar("ESTAFETTE_EXTENSION_CONFIGURATION").Default("Release").String()
-	versionSuffix     = kingpin.Flag("versionSuffix", "The build configuration.").Envar("ESTAFETTE_EXTENSION_VERSION_SUFFIX").String()
-	project           = kingpin.Flag("project", "The path to the project for which the tests/build should be run.").Envar("ESTAFETTE_EXTENSION_PROJECT").String()
-	runtimeID         = kingpin.Flag("runtimeId", "The publish runtime.").Envar("ESTAFETTE_EXTENSION_RUNTIME_ID").Default("linux-x64").String()
-	forceRestore      = kingpin.Flag("forceRestore", "Execute the restore on every action.").Envar("ESTAFETTE_EXTENSION_FORCE_RESTORE").Default("false").Bool()
-	forceBuild        = kingpin.Flag("forceBuild", "Execute the build on every action.").Envar("ESTAFETTE_EXTENSION_FORCE_BUILD").Default("false").Bool()
-	outputFolder      = kingpin.Flag("outputFolder", "The folder into which the publish output is generated.").Envar("ESTAFETTE_EXTENSION_OUTPUT_FOLDER").String()
-	nugetServerURL    = kingpin.Flag("nugetServerUrl", "The URL of the NuGet server.").Envar("ESTAFETTE_EXTENSION_NUGET_SERVER_URL").String()
-	nugetServerAPIKey = kingpin.Flag("nugetServerApiKey", "The API key of the NuGet server.").Envar("ESTAFETTE_EXTENSION_NUGET_SERVER_API_KEY").String()
+	action                     = kingpin.Flag("action", "Any of the following actions: restore, build, test, unit-test, integration-test, publish, pack, push-nuget").Envar("ESTAFETTE_EXTENSION_ACTION").String()
+	configuration              = kingpin.Flag("configuration", "The build configuration.").Envar("ESTAFETTE_EXTENSION_CONFIGURATION").Default("Release").String()
+	versionSuffix              = kingpin.Flag("versionSuffix", "The build configuration.").Envar("ESTAFETTE_EXTENSION_VERSION_SUFFIX").String()
+	project                    = kingpin.Flag("project", "The path to the project for which the tests/build should be run.").Envar("ESTAFETTE_EXTENSION_PROJECT").String()
+	runtimeID                  = kingpin.Flag("runtimeId", "The publish runtime.").Envar("ESTAFETTE_EXTENSION_RUNTIME_ID").Default("linux-x64").String()
+	forceRestore               = kingpin.Flag("forceRestore", "Execute the restore on every action.").Envar("ESTAFETTE_EXTENSION_FORCE_RESTORE").Default("false").Bool()
+	forceBuild                 = kingpin.Flag("forceBuild", "Execute the build on every action.").Envar("ESTAFETTE_EXTENSION_FORCE_BUILD").Default("false").Bool()
+	outputFolder               = kingpin.Flag("outputFolder", "The folder into which the publish output is generated.").Envar("ESTAFETTE_EXTENSION_OUTPUT_FOLDER").String()
+	nugetServerURL             = kingpin.Flag("nugetServerUrl", "The URL of the NuGet server.").Envar("ESTAFETTE_EXTENSION_NUGET_SERVER_URL").String()
+	nugetServerAPIKey          = kingpin.Flag("nugetServerApiKey", "The API key of the NuGet server.").Envar("ESTAFETTE_EXTENSION_NUGET_SERVER_API_KEY").String()
+	nugetServerCredentialsJSON = kingpin.Flag("nugetServerCredentials", "NuGet Server credentials configured at server level, passed in to this trusted extension.").Envar("ESTAFETTE_CREDENTIALS_NUGET_SERVER").String()
+	nugetServerName            = kingpin.Flag("nugetServerName", "The name of the preferred NuGet server from the preconfigured credentials.").Envar("ESTAFETTE_EXTENSION_NUGET_SERVER_NAME").String()
 )
 
 func main() {
@@ -55,9 +58,8 @@ func main() {
 
 	// set defaults
 	gitBranch := os.Getenv("ESTAFETTE_GIT_BRANCH")
-	versionPatch := os.Getenv("ESTAFETTE_BUILD_VERSION_PATCH")
-	if versionSuffix == nil {
-		versionSuffix = &versionPatch
+	if *versionSuffix == "" {
+		*versionSuffix = os.Getenv("ESTAFETTE_BUILD_VERSION_PATCH")
 	}
 
 	solutionName, _ := getSolutionName()
@@ -105,11 +107,11 @@ func main() {
 			*configuration,
 		}
 
-		if versionSuffix != nil && *versionSuffix != "" {
+		if *versionSuffix != "" {
 			args = append(args, "--version-suffix", *versionSuffix)
 		}
 
-		if forceRestore == nil || !*forceRestore {
+		if !*forceRestore {
 			args = append(args, "--no-restore")
 		}
 
@@ -150,21 +152,11 @@ func main() {
 
 		log.Printf("Publishing the binaries...\n")
 
-		targetProject := ""
-
-		if project != nil {
-			targetProject = *project
+		if *project == "" {
+			*project = fmt.Sprintf("src/%s.WebService", solutionName)
 		}
 
-		if targetProject == "" {
-			targetProject = fmt.Sprintf("src/%s.WebService", solutionName)
-		}
-
-		var output string
-
-		if outputFolder != nil && *outputFolder != "" {
-			output = *outputFolder
-		} else {
+		if *outputFolder == "" {
 			// A default sensible choice is to put the publish output directly under the working folder in a folder called "publish", so that its relative path doesn't depend on the project name.
 			// This makes it easier to use in a generic way in followup steps of the build.
 			output = filepath.Join(workingDir, "publish")
@@ -177,15 +169,15 @@ func main() {
 			"--runtime",
 			*runtimeID,
 			"--output",
-			output,
-			targetProject,
+			*outputFolder,
+			*project,
 		}
 
-		if versionSuffix != nil && *versionSuffix != "" {
+		if *versionSuffix != "" {
 			args = append(args, "--version-suffix", *versionSuffix)
 		}
 
-		if forceRestore == nil || !*forceRestore {
+		if !*forceRestore {
 			args = append(args, "--no-restore")
 		}
 
@@ -213,7 +205,7 @@ func main() {
 			*configuration,
 		}
 
-		if versionSuffix != nil && *versionSuffix != "" {
+		if *versionSuffix != "" {
 			args = append(args, "--version-suffix", *versionSuffix)
 		} else {
 			if gitBranch != "master" {
@@ -223,11 +215,11 @@ func main() {
 			}
 		}
 
-		if forceRestore == nil || !*forceRestore {
+		if !*forceRestore {
 			args = append(args, "--no-restore")
 		}
 
-		if forceBuild == nil || !*forceBuild {
+		if !*forceBuild {
 			args = append(args, "--no-build")
 		}
 
@@ -246,6 +238,44 @@ func main() {
 		// nugetServerApikey: 3a4cdeca-3d5b-41a2-ac59-ae4b5c5eaece
 
 		log.Printf("Publishing the nuget package(s)...\n")
+
+		// Determine the NuGet server credentials
+		// 1. If nugetServerURL and nugetServerAPIKey are explicitly specified, we use those.
+		// 2. If we have the default credentials from the server level, and nugetServerName is explicitly specified, we look for the credential with the specified name.
+		// 3. If we have the default credentials from the server level, and nugetServerName is not specified, we take the first credential. (This is the sensible default if we're using only one NuGet server.)
+
+		if *nugetServerURL == "" || *nugetServerAPIKey == "" {
+			if *nugetServerCredentialsJSON != "" {
+				log.Printf("Unmarshalling credentials...")
+				var credentials []NugetServerCredentials
+				err := json.Unmarshal([]byte(*nugetServerCredentialsJSON), &credentials)
+				if err != nil {
+					log.Fatal("Failed unmarshalling credentials: ", err)
+				}
+
+				if len(credentials) == 0 {
+					log.Fatal("There were no credentials specified.")
+				}
+
+				if *nugetServerName != "" {
+					credential := GetNugetServerCredentialsByName(credentials, *nugetServerName)
+					if credential == nil {
+						log.Fatalf("The NuGet Server credential with the name %v does not exist.", *nugetServerName)
+					}
+
+					*nugetServerURL = credential.AdditionalProperties.APIURL
+					*nugetServerAPIKey = credential.AdditionalProperties.APIKey
+				} else {
+					// Just pick the first
+					credential := credentials[0]
+
+					*nugetServerURL = credential.AdditionalProperties.APIURL
+					*nugetServerAPIKey = credential.AdditionalProperties.APIKey
+				}
+			} else {
+				log.Fatal("The NuGet server URL and API key have to be specified to push a package.")
+			}
+		}
 
 		srcPath := filepath.Join(workingDir, "src")
 
@@ -321,11 +351,11 @@ func runTests(projectSuffix string) {
 		*configuration,
 	}
 
-	if forceRestore == nil || !*forceRestore {
+	if !*forceRestore {
 		args = append(args, "--no-restore")
 	}
 
-	if forceBuild == nil || !*forceBuild {
+	if !*forceBuild {
 		args = append(args, "--no-build")
 	}
 
