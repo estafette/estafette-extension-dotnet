@@ -118,7 +118,7 @@ The default runtime identifier is `linux-x64`, this can be overridden with the `
 Syntax:
 
 ```
-  build:
+  publish:
     image: extensions/dotnet:2.1-stable
     action: publish
     forceRestore: true
