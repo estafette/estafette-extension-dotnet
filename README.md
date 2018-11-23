@@ -105,6 +105,31 @@ The same as `test`, but only runs the tests for projects ending with `UnitTests`
 
 The same as `test`, but only runs the tests for projects ending with `IntegrationTests`.
 
+### publish
+
+Generates the final binaries by executing `dotnet publish`.
+
+By default it tries to publish a project in the `./src` folder with the name `<SolutionName>.WebService`. You can override this by explicitly specifying the `project` field.
+
+If the `outputFolder` is not specified, it puts the binaries in the `./publish` folder *directly the root*.
+
+The default runtime identifier is `linux-x64`, this can be overridden with the `runtimeId` field.
+
+Syntax:
+
+```
+  build:
+    image: extensions/dotnet:2.1-stable
+    action: publish
+    forceRestore: true
+    forceBuild: true
+    project: src/CustomProject
+    configuration: Debug
+    runtimeId: windows10-x64
+    outputFolder: ./binaries
+    buildVersion: 1.5.0
+```
+
 ### pack
 
 Creates the NuGet package by executing `nuget pack`.

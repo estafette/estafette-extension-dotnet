@@ -148,7 +148,7 @@ func main() {
 		// configuration: Debug
 		// runtimteId: windows10-x64
 		// outputFolder: ./binaries
-		// versionSuffix: 5
+		// buildVersion: 1.5.0
 
 		log.Printf("Publishing the binaries...\n")
 
