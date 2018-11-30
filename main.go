@@ -58,6 +58,9 @@ func main() {
 
 	// set defaults
 	builtInBuildVersion := os.Getenv("ESTAFETTE_BUILD_VERSION")
+
+	// Branch names sometimes contain foreslashes, which are not allowed in version names, so we replace them with dashes.
+	builtInBuildVersion = strings.Replace(builtInBuildVersion, "/", "-", -1)
 	if *buildVersion == "" {
 		*buildVersion = builtInBuildVersion
 	}
