@@ -176,6 +176,6 @@ Or we can explicitly configure the URL and the API Key, that way we're not using
   push-nuget:
     image: extensions/dotnet:2.1-stable
     action: push-nuget
-		nugetServerUrl: https://nuget.mycompany.com
-		nugetServerApiKey: 3a4cdeca-3d5b-41a2-ac59-ae4b5c5eaece
+    nugetServerUrl: https://nuget.mycompany.com
+    nugetServerApiKey: 3a4cdeca-3d5b-41a2-ac59-ae4b5c5eaece
 ```
