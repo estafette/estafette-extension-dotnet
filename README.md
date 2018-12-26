@@ -13,19 +13,19 @@ A full build and publish process (with the default setting everywhere) of an API
 ```
 stages:
   restore:
-    image: extensions/dotnet:2.1-stable
+    image: extensions/dotnet:2.2-stable
     action: restore
 
   build:
-    image: extensions/dotnet:2.1-stable
+    image: extensions/dotnet:2.2-stable
     action: build
 
   tests:
-    image: extensions/dotnet:2.1-stable
+    image: extensions/dotnet:2.2-stable
     action: test
 
   publish:
-    image: extensions/dotnet:2.1-stable
+    image: extensions/dotnet:2.2-stable
     action: publish
 ```
 
@@ -34,23 +34,23 @@ And for a library:
 ```
 stages:
   restore:
-    image: extensions/dotnet:2.1-stable
+    image: extensions/dotnet:2.2-stable
     action: restore
 
   build:
-    image: extensions/dotnet:2.1-stable
+    image: extensions/dotnet:2.2-stable
     action: build
 
   tests:
-    image: extensions/dotnet:2.1-stable
+    image: extensions/dotnet:2.2-stable
     action: test
 
   pack:
-    image: extensions/dotnet:2.1-stable
+    image: extensions/dotnet:2.2-stable
     action: pack
 
   push-nuget:
-    image: extensions/dotnet:2.1-stable
+    image: extensions/dotnet:2.2-stable
     action: push-nuget
 ```
 
@@ -75,7 +75,7 @@ Syntax:
 
 ```
   build:
-    image: extensions/dotnet:2.1-stable
+    image: extensions/dotnet:2.2-stable
     action: build
     configuration: Debug
     buildVersion: 1.5.0
@@ -90,7 +90,7 @@ Syntax:
 
 ```
   test:
-    image: extensions/dotnet:2.1-stable
+    image: extensions/dotnet:2.2-stable
     action: test
     configuration: Debug
     forceRestore: true
@@ -119,7 +119,7 @@ Syntax:
 
 ```
   publish:
-    image: extensions/dotnet:2.1-stable
+    image: extensions/dotnet:2.2-stable
     action: publish
     forceRestore: true
     forceBuild: true
@@ -138,7 +138,7 @@ Syntax:
 
 ```
   pack:
-    image: extensions/dotnet:2.1-stable
+    image: extensions/dotnet:2.2-stable
     action: pack
     configuration: Debug
     forceRestore: true
@@ -155,7 +155,7 @@ If we don't specify the NuGet server in any way.
 
 ```
   push-nuget:
-    image: extensions/dotnet:2.1-stable
+    image: extensions/dotnet:2.2-stable
     action: push-nuget
 ```
 
@@ -165,7 +165,7 @@ If we have multiple credentials configured, then we can also pick one by its nam
 
 ```
   push-nuget:
-    image: extensions/dotnet:2.1-stable
+    image: extensions/dotnet:2.2-stable
     action: push-nuget
     nugetServerName: my-configured-server
 ```
@@ -174,7 +174,7 @@ Or we can explicitly configure the URL and the API Key, that way we're not using
 
 ```
   push-nuget:
-    image: extensions/dotnet:2.1-stable
+    image: extensions/dotnet:2.2-stable
     action: push-nuget
     nugetServerUrl: https://nuget.mycompany.com
     nugetServerApiKey: 3a4cdeca-3d5b-41a2-ac59-ae4b5c5eaece
