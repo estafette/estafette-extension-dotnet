@@ -152,8 +152,15 @@ func main() {
 
 		log.Printf("Publishing the binaries...\n")
 
+		// The solution is called Acme.FooApi, then we by default look for a project called Acme.FooApi.WebService, and if that doesn't exist, we fall back to simply Acme.FooApi
 		if *project == "" {
 			*project = fmt.Sprintf("src/%s.WebService", solutionName)
+			if _, err := os.Stat(*project); os.IsNotExist(err) {
+				*project = fmt.Sprintf("src/%s", solutionName)
+				if _, err := os.Stat(*project); os.IsNotExist(err) {
+					log.Fatal("The project to be published can not be found. Please specify it with the 'project' label.")
+				}
+			}
 		}
 
 		if *outputFolder == "" {
