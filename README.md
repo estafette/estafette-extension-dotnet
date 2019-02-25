@@ -105,6 +105,19 @@ The same as `test`, but only runs the tests for projects ending with `UnitTests`
 
 The same as `test`, but only runs the tests for projects ending with `IntegrationTests`.
 
+### analyze-sonarqube
+
+Runs the SonarQube analysis on the whole solution, and sends the analysis report to the Sonar server.  
+It also collects test coverage, if the `coverlet.msbuild` package is added to the Unit test projects as a package dependency.
+
+```
+  test:
+    image: extensions/dotnet:2.2-stable
+    action: analyze-sonarqube
+```
+
+The URL of the Sonar server to use can be customized with the `sonarQubeServerUrl` field.
+
 ### publish
 
 Generates the final binaries by executing `dotnet publish`.

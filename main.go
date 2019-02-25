@@ -24,18 +24,21 @@ var (
 
 var (
 	// flags
-	action                     = kingpin.Flag("action", "Any of the following actions: restore, build, test, unit-test, integration-test, publish, pack, push-nuget").Envar("ESTAFETTE_EXTENSION_ACTION").String()
-	configuration              = kingpin.Flag("configuration", "The build configuration.").Envar("ESTAFETTE_EXTENSION_CONFIGURATION").Default("Release").String()
-	buildVersion               = kingpin.Flag("buildVersion", "The build version.").Envar("ESTAFETTE_EXTENSION_BUILD_VERSION").String()
-	project                    = kingpin.Flag("project", "The path to the project for which the tests/build should be run.").Envar("ESTAFETTE_EXTENSION_PROJECT").String()
-	runtimeID                  = kingpin.Flag("runtimeId", "The publish runtime.").Envar("ESTAFETTE_EXTENSION_RUNTIME_ID").Default("linux-x64").String()
-	forceRestore               = kingpin.Flag("forceRestore", "Execute the restore on every action.").Envar("ESTAFETTE_EXTENSION_FORCE_RESTORE").Default("false").Bool()
-	forceBuild                 = kingpin.Flag("forceBuild", "Execute the build on every action.").Envar("ESTAFETTE_EXTENSION_FORCE_BUILD").Default("false").Bool()
-	outputFolder               = kingpin.Flag("outputFolder", "The folder into which the publish output is generated.").Envar("ESTAFETTE_EXTENSION_OUTPUT_FOLDER").String()
-	nugetServerURL             = kingpin.Flag("nugetServerUrl", "The URL of the NuGet server.").Envar("ESTAFETTE_EXTENSION_NUGET_SERVER_URL").String()
-	nugetServerAPIKey          = kingpin.Flag("nugetServerApiKey", "The API key of the NuGet server.").Envar("ESTAFETTE_EXTENSION_NUGET_SERVER_API_KEY").String()
-	nugetServerCredentialsJSON = kingpin.Flag("nugetServerCredentials", "NuGet Server credentials configured at server level, passed in to this trusted extension.").Envar("ESTAFETTE_CREDENTIALS_NUGET_SERVER").String()
-	nugetServerName            = kingpin.Flag("nugetServerName", "The name of the preferred NuGet server from the preconfigured credentials.").Envar("ESTAFETTE_EXTENSION_NUGET_SERVER_NAME").String()
+	action                         = kingpin.Flag("action", "Any of the following actions: restore, build, test, unit-test, integration-test, publish, pack, push-nuget").Envar("ESTAFETTE_EXTENSION_ACTION").String()
+	configuration                  = kingpin.Flag("configuration", "The build configuration.").Envar("ESTAFETTE_EXTENSION_CONFIGURATION").Default("Release").String()
+	buildVersion                   = kingpin.Flag("buildVersion", "The build version.").Envar("ESTAFETTE_EXTENSION_BUILD_VERSION").String()
+	project                        = kingpin.Flag("project", "The path to the project for which the tests/build should be run.").Envar("ESTAFETTE_EXTENSION_PROJECT").String()
+	runtimeID                      = kingpin.Flag("runtimeId", "The publish runtime.").Envar("ESTAFETTE_EXTENSION_RUNTIME_ID").Default("linux-x64").String()
+	forceRestore                   = kingpin.Flag("forceRestore", "Execute the restore on every action.").Envar("ESTAFETTE_EXTENSION_FORCE_RESTORE").Default("false").Bool()
+	forceBuild                     = kingpin.Flag("forceBuild", "Execute the build on every action.").Envar("ESTAFETTE_EXTENSION_FORCE_BUILD").Default("false").Bool()
+	outputFolder                   = kingpin.Flag("outputFolder", "The folder into which the publish output is generated.").Envar("ESTAFETTE_EXTENSION_OUTPUT_FOLDER").String()
+	nugetServerURL                 = kingpin.Flag("nugetServerUrl", "The URL of the NuGet server.").Envar("ESTAFETTE_EXTENSION_NUGET_SERVER_URL").String()
+	nugetServerAPIKey              = kingpin.Flag("nugetServerApiKey", "The API key of the NuGet server.").Envar("ESTAFETTE_EXTENSION_NUGET_SERVER_API_KEY").String()
+	nugetServerCredentialsJSON     = kingpin.Flag("nugetServerCredentials", "NuGet Server credentials configured at server level, passed in to this trusted extension.").Envar("ESTAFETTE_CREDENTIALS_NUGET_SERVER").String()
+	nugetServerName                = kingpin.Flag("nugetServerName", "The name of the preferred NuGet server from the preconfigured credentials.").Envar("ESTAFETTE_EXTENSION_NUGET_SERVER_NAME").String()
+	sonarQubeServerURL             = kingpin.Flag("sonarQubeServerUrl", "The URL of the SonarQube Server to which we send analysis reports.").Envar("ESTAFETTE_EXTENSION_SONARQUBE_SERVER_URL").String()
+	sonarQubeServerCredentialsJSON = kingpin.Flag("sonarQubeServerCredentials", "SonarQube Server credentials configured at server level, passed in to this trusted extension.").Envar("ESTAFETTE_CREDENTIALS_SONARQUBE_SERVER").String()
+	sonarQubeServerName            = kingpin.Flag("sonarQubeServerName", "The name of the preferred SonarQube server from the preconfigured credentials.").Envar("ESTAFETTE_EXTENSION_SONARQUBE_SERVER_NAME").String()
 )
 
 func main() {
@@ -134,6 +137,93 @@ func main() {
 		log.Printf("Running tests for projects ending with IntegrationTests in the ./test folder...\n")
 
 		runTests("IntegrationTests")
+
+	case "analyze-sonarqube": // Run the SonarQube analysis.
+
+		// Minimal example with defaults.
+		// image: extensions/dotnet:stable
+		// action: analyze-sonarqube
+
+		// Customizations.
+		// image: extensions/dotnet:stable
+		// action: analyze-sonarqube
+		// sonarQubeServerUrl: https://my-sonar-server.example.com
+
+		log.Printf("Running the SonarQube analysis...\n")
+
+		// Determine the SonarQube server credentials
+		// 1. If sonarQubeServerURL is explicitly specified, we use that.
+		// 2. If we have the default credentials from the server level, and sonarQubeServerName is explicitly specified, we look for the credential with the specified name.
+		// 3. If we have the default credentials from the server level, and sonarQubeServerName is not specified, we take the first credential. (This is the sensible default if we're using only one SonarQube server.)
+		if *sonarQubeServerURL == "" {
+			if *sonarQubeServerCredentialsJSON != "" {
+				log.Printf("Unmarshalling credentials...")
+				var credentials []SonarQubeServerCredentials
+				err := json.Unmarshal([]byte(*sonarQubeServerCredentialsJSON), &credentials)
+				if err != nil {
+					log.Fatal("Failed unmarshalling credentials: ", err)
+				}
+
+				if len(credentials) == 0 {
+					log.Fatal("There were no credentials specified.")
+				}
+
+				if *sonarQubeServerName != "" {
+					credential := GetSonarQubeServerCredentialsByName(credentials, *sonarQubeServerName)
+					if credential == nil {
+						log.Fatalf("The NuGet Server credential with the name %v does not exist.", *sonarQubeServerName)
+					}
+
+					*sonarQubeServerURL = credential.AdditionalProperties.APIURL
+				} else {
+					// Just pick the first
+					credential := credentials[0]
+
+					*sonarQubeServerURL = credential.AdditionalProperties.APIURL
+				}
+			} else {
+				log.Fatal("The SonarQube server URL has to be specified to run the analysis.")
+			}
+		}
+
+		// dotnet tool install --global dotnet-sonarscanner
+		args := []string{
+			"tool",
+			"install",
+			"--global",
+			"dotnet-sonarscanner",
+		}
+
+		runCommandIgnoreFailure("dotnet", args)
+
+		// dotnet sonarscanner begin /k:"Travix.Core.ShoppingCart" /d:sonar.host.url=https://sonarqube.travix.com /d:sonar.cs.opencover.reportsPaths="**\coverage.opencover.xml" /d:sonar.coverage.exclusions="**Tests.cs"
+		args = []string{
+			"sonarscanner",
+			"begin",
+			fmt.Sprintf("/key:%s", solutionName),
+			fmt.Sprintf("/d:sonar.host.url=%s", *sonarQubeServerURL),
+			"/d:sonar.cs.opencover.reportsPaths=\"**\\coverage.opencover.xml\"",
+			"/d:sonar.coverage.exclusions=\"**Tests.cs\"",
+		}
+
+		runCommand("dotnet", args)
+
+		// dotnet build
+		args = []string{"build"}
+
+		runCommand("dotnet", args)
+
+		// Run unit tests with the extra arguments for coverage.
+		*forceBuild = true
+		runTests("UnitTests", "/p:CollectCoverage=true", "/p:CoverletOutputFormat=opencover")
+
+		// dotnet sonarscanner end
+		args = []string{
+			"sonarscanner",
+			"end",
+		}
+
+		runCommand("dotnet", args)
 
 	case "publish": // Publish the final binaries.
 
@@ -309,7 +399,7 @@ func main() {
 
 			argsForPackage = append(argsForPackage, files[i])
 
-			runCommandWithoutPrinting("dotnet", argsForPackage)
+			runCommandWithoutPrinting("dotnet", true, argsForPackage)
 		}
 
 	default:
@@ -335,7 +425,7 @@ func getSolutionName() (string, error) {
 }
 
 // Runs the unit tests for all projects in the ./test folder which have the passed in suffix in their name.
-func runTests(projectSuffix string) {
+func runTests(projectSuffix string, extraArgs ...string) {
 	// Minimal example with defaults.
 	// image: extensions/dotnet:stable
 	// action: build
@@ -360,6 +450,8 @@ func runTests(projectSuffix string) {
 		args = append(args, "--no-build")
 	}
 
+	args = append(args, extraArgs...)
+
 	files, err := ioutil.ReadDir("./test")
 
 	if err != nil {
@@ -380,22 +472,31 @@ func runTests(projectSuffix string) {
 	}
 }
 
-func handleError(err error) {
+func handleError(err error, exitOnError bool) {
 	if err != nil {
-		log.Fatal(err)
+		if exitOnError {
+			log.Fatal(err)
+		} else {
+			log.Print(err)
+		}
 	}
 }
 
 func runCommand(command string, args []string) {
 	log.Printf("Running command '%v %v'...", command, strings.Join(args, " "))
-	runCommandWithoutPrinting(command, args)
+	runCommandWithoutPrinting(command, true, args)
 }
 
-func runCommandWithoutPrinting(command string, args []string) {
+func runCommandIgnoreFailure(command string, args []string) {
+	log.Printf("Running command '%v %v'...", command, strings.Join(args, " "))
+	runCommandWithoutPrinting(command, false, args)
+}
+
+func runCommandWithoutPrinting(command string, exitOnError bool, args []string) {
 	cmd := exec.Command(command, args...)
 	cmd.Dir = "/estafette-work"
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()
-	handleError(err)
+	handleError(err, exitOnError)
 }
