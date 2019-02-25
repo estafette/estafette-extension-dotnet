@@ -274,10 +274,6 @@ func main() {
 			args = append(args, fmt.Sprintf("/p:Version=%s", *buildVersion))
 		}
 
-		if !*forceRestore {
-			args = append(args, "--no-restore")
-		}
-
 		runCommand("dotnet", args)
 
 	case "pack": // Pack the NuGet package.
