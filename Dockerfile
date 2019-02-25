@@ -5,6 +5,8 @@ LABEL maintainer="estafette.io" \
 
 RUN apt-get update && apt-get install -y openjdk-8-jre
 
+ENV PATH "$PATH:/root/.dotnet/tools"
+
 COPY estafette-extension-dotnet /
 
 ENTRYPOINT ["/estafette-extension-dotnet"]
