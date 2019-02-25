@@ -206,10 +206,18 @@ func main() {
 			"/d:sonar.coverage.exclusions=\"**Tests.cs\"",
 		}
 
+		if *buildVersion != "" {
+			args = append(args, fmt.Sprintf("/version:%s", *buildVersion))
+		}
+
 		runCommand("dotnet", args)
 
 		// dotnet build
 		args = []string{"build"}
+
+		if *buildVersion != "" {
+			args = append(args, fmt.Sprintf("/p:Version=%s", *buildVersion))
+		}
 
 		runCommand("dotnet", args)
 
