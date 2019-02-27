@@ -194,10 +194,10 @@ func main() {
 		// 	"dotnet-sonarscanner",
 		// }
 
-		runCommandIgnoreFailure("dotnet", args)
+		// runCommandIgnoreFailure("dotnet", args)
 
 		// dotnet sonarscanner begin /k:"Travix.Core.ShoppingCart" /d:sonar.host.url=https://sonarqube.travix.com /d:sonar.cs.opencover.reportsPaths="**\coverage.opencover.xml" /d:sonar.coverage.exclusions="**Tests.cs"
-		args = []string{
+		args := []string{
 			"sonarscanner",
 			"begin",
 			fmt.Sprintf("/key:%s", solutionName),
