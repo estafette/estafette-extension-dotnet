@@ -45,7 +45,7 @@ stages:
       status == 'failed'
 
 releases:
-  "2.1-dev":
+  "2.2-dev":
     clone: true
     stages:
       build:
@@ -85,7 +85,7 @@ releases:
           status == 'succeeded' ||
           status == 'failed'
 
-  "2.1-stable":
+  "2.2-stable":
     clone: true
     stages:
       build:
