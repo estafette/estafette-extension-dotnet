@@ -187,12 +187,12 @@ func main() {
 		}
 
 		// dotnet tool install --global dotnet-sonarscanner
-		args := []string{
-			"tool",
-			"install",
-			"--global",
-			"dotnet-sonarscanner",
-		}
+		// args := []string{
+		// 	"tool",
+		// 	"install",
+		// 	"--global",
+		// 	"dotnet-sonarscanner",
+		// }
 
 		runCommandIgnoreFailure("dotnet", args)
 
