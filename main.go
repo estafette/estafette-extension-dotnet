@@ -219,6 +219,10 @@ func main() {
 			args = append(args, fmt.Sprintf("/p:Version=%s", *buildVersion))
 		}
 
+		if !*forceRestore {
+			args = append(args, "--no-restore")
+		}
+
 		runCommand("dotnet", args)
 
 		// Run unit tests with the extra arguments for coverage.
