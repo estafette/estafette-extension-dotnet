@@ -186,20 +186,8 @@ func main() {
 			}
 		}
 
-		// dotnet tool install --global dotnet-sonarscanner
-		args := []string{
-			"tool",
-			"install",
-			"--global",
-			"--add-source",
-			"https://api.nuget.org/v3/index.json",
-			"dotnet-sonarscanner",
-		}
-
-		runCommandIgnoreFailure("dotnet", args)
-
 		// dotnet sonarscanner begin /k:"Travix.Core.ShoppingCart" /d:sonar.host.url=https://sonarqube.travix.com /d:sonar.cs.opencover.reportsPaths="**\coverage.opencover.xml" /d:sonar.coverage.exclusions="**Tests.cs"
-		args = []string{
+		args := []string{
 			"sonarscanner",
 			"begin",
 			fmt.Sprintf("/key:%s", solutionName),

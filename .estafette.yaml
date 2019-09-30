@@ -35,6 +35,9 @@ stages:
     versionTagSuffix: v2.1-sdk
     env:
       SDK_VERSION_TAG: 2.1-sdk
+    args:
+    - SDK_VERSION_TAG
+    expand-variables: false
     copy:
     - Dockerfile
 
@@ -49,6 +52,9 @@ stages:
     versionTagSuffix: v2.2-sdk
     env:
       SDK_VERSION_TAG: 2.2-sdk
+    args:
+    - SDK_VERSION_TAG
+    expand-variables: false
     copy:
     - Dockerfile
 
@@ -63,6 +69,9 @@ stages:
     versionTagSuffix: v3.0-sdk
     env:
       SDK_VERSION_TAG: 3.0-sdk
+    args:
+    - SDK_VERSION_TAG
+    expand-variables: false
     copy:
     - Dockerfile
 
