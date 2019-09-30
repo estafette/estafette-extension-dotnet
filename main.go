@@ -458,21 +458,21 @@ func runTests(projectSuffix string, extraArgs ...string) {
 
 	files, err := ioutil.ReadDir("./test")
 
-	if err != nil {
-		log.Fatal("Failed to read subdirectories under ./test.")
-	}
+	if err == nil {
+		for _, f := range files {
+			if f.IsDir() && strings.HasSuffix(f.Name(), projectSuffix) {
+				log.Printf("Running tests for ./test/%s...\n", f.Name())
 
-	for _, f := range files {
-		if f.IsDir() && strings.HasSuffix(f.Name(), projectSuffix) {
-			log.Printf("Running tests for ./test/%s...\n", f.Name())
+				argsForProject := make([]string, len(args)+1)
+				copy(argsForProject, args)
 
-			argsForProject := make([]string, len(args)+1)
-			copy(argsForProject, args)
+				argsForProject = append(argsForProject, fmt.Sprintf("./test/%s", f.Name()))
 
-			argsForProject = append(argsForProject, fmt.Sprintf("./test/%s", f.Name()))
-
-			runCommand("dotnet", argsForProject)
+				runCommand("dotnet", argsForProject)
+			}
 		}
+	} else if !os.IsNotExist(err) { // If we got an error just because the "test" folder doesn't exist, that's fine, we can ignore. We only fail with an error if it was something else.
+		log.Fatal("Failed to read subdirectories under ./test.")
 	}
 }
 
