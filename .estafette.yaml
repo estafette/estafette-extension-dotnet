@@ -24,15 +24,74 @@ stages:
     commands:
     - go build -v -ldflags "-X main.version=${ESTAFETTE_BUILD_VERSION} -X main.revision=${ESTAFETTE_GIT_REVISION} -X main.branch=${ESTAFETTE_GIT_BRANCH} -X main.buildDate=${ESTAFETTE_BUILD_DATETIME}" -o ./publish/${ESTAFETTE_LABEL_APP} .
 
-  bake:
-    image: extensions/docker:stable
+  bake-2.1:
+    image: extensions/docker:dev
     action: build
     container: dotnet
     repositories:
     - extensions
     path: ./publish
+    versionTagSuffix: 2.1-sdk
+    env:
+      SDK_VERSION_TAG: 2.1-sdk
+    args:
+    - SDK_VERSION_TAG
     copy:
     - Dockerfile
+
+  bake-2.2:
+    image: extensions/docker:dev
+    action: build
+    container: dotnet
+    repositories:
+    - extensions
+    path: ./publish
+    versionTagSuffix: 2.2-sdk
+    env:
+      SDK_VERSION_TAG: 2.2-sdk
+    args:
+    - SDK_VERSION_TAG
+    copy:
+    - Dockerfile
+
+  bake-3.0:
+    image: extensions/docker:dev
+    action: build
+    container: dotnet
+    repositories:
+    - extensions
+    path: ./publish
+    versionTagSuffix: 3.0-sdk
+    env:
+      SDK_VERSION_TAG: 3.0-sdk
+    args:
+    - SDK_VERSION_TAG
+    copy:
+    - Dockerfile
+
+  push-container-image-2.1:
+    image: extensions/docker:dev
+    action: push
+    container: dotnet
+    versionTagSuffix: 2.1-sdk
+    repositories:
+    - extensions
+
+  push-container-image-2.2:
+    image: extensions/docker:dev
+    action: push
+    container: dotnet
+    versionTagSuffix: 2.2-sdk
+    repositories:
+    - extensions
+
+  push-container-image-3.0:
+    image: extensions/docker:dev
+    action: push
+    container: dotnet
+    versionTagSuffix: 3.0-sdk
+    repositories:
+    - extensions
 
   slack-notify:
     image: extensions/slack-build-status:dev
@@ -44,35 +103,41 @@ stages:
       status == 'failed'
 
 releases:
-  "2.2-dev":
-    clone: true
+  dev:
+    triggers:
+    - pipeline:
+        name: self
+        branch: .+
     stages:
-      build:
-        image: golang:1.13.0-alpine3.10
-        env:
-          CGO_ENABLED: 0
-          GOOS: linux
-        commands:
-        - go build -v -ldflags "-X main.version=${ESTAFETTE_BUILD_VERSION} -X main.revision=${ESTAFETTE_GIT_REVISION} -X main.branch=${ESTAFETTE_GIT_BRANCH} -X main.buildDate=${ESTAFETTE_BUILD_DATETIME}" -o ./publish/${ESTAFETTE_LABEL_APP} .
-
-      bake:
-        image: extensions/docker:stable
-        action: build
+      tag-container-image-2.1:
+        image: extensions/docker:dev
+        action: tag
         container: dotnet
-        repositories:
-        - extensions
-        path: ./publish
-        copy:
-        - Dockerfile
-
-      push-container-image:
-        image: extensions/docker:stable
-        action: push
-        container: dotnet
+        versionTagSuffix: 2.1-sdk
         repositories:
         - extensions
         tags:
-        - ${ESTAFETTE_RELEASE_NAME}
+        - 2.1-dev
+
+      tag-container-image-2.2:
+        image: extensions/docker:dev
+        action: tag
+        container: dotnet
+        versionTagSuffix: 2.2-sdk
+        repositories:
+        - extensions
+        tags:
+        - 2.2-dev
+
+      tag-container-image-3.0:
+        image: extensions/docker:dev
+        action: tag
+        container: dotnet
+        versionTagSuffix: 3.0-sdk
+        repositories:
+        - extensions
+        tags:
+        - 3.0-dev
 
       slack-notify:
         image: extensions/slack-build-status:dev
@@ -83,35 +148,37 @@ releases:
           status == 'succeeded' ||
           status == 'failed'
 
-  "2.2-stable":
-    clone: true
+  stable:
     stages:
-      build:
-        image: golang:1.13.0-alpine3.10
-        env:
-          CGO_ENABLED: 0
-          GOOS: linux
-        commands:
-        - go build -v -ldflags "-X main.version=${ESTAFETTE_BUILD_VERSION} -X main.revision=${ESTAFETTE_GIT_REVISION} -X main.branch=${ESTAFETTE_GIT_BRANCH} -X main.buildDate=${ESTAFETTE_BUILD_DATETIME}" -o ./publish/${ESTAFETTE_LABEL_APP} .
-
-      bake:
-        image: extensions/docker:stable
-        action: build
+      tag-container-image-2.1:
+        image: extensions/docker:dev
+        action: tag
         container: dotnet
-        repositories:
-        - extensions
-        path: ./publish
-        copy:
-        - Dockerfile
-
-      push-container-image:
-        image: extensions/docker:stable
-        action: push
-        container: dotnet
+        versionTagSuffix: 2.1-sdk
         repositories:
         - extensions
         tags:
-        - ${ESTAFETTE_RELEASE_NAME}
+        - 2.1-stable
+
+      tag-container-image-2.2:
+        image: extensions/docker:dev
+        action: tag
+        container: dotnet
+        versionTagSuffix: 2.2-sdk
+        repositories:
+        - extensions
+        tags:
+        - 2.2-stable
+
+      tag-container-image-3.0:
+        image: extensions/docker:dev
+        action: tag
+        container: dotnet
+        versionTagSuffix: 3.0-sdk
+        repositories:
+        - extensions
+        tags:
+        - 3.0-stable
 
       slack-notify:
         image: extensions/slack-build-status:dev
