@@ -1,4 +1,3 @@
-ARG SDK_VERSION_TAG
 FROM microsoft/dotnet:${SDK_VERSION_TAG}
 
 LABEL maintainer="estafette.io" \

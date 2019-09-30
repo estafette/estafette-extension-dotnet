@@ -31,11 +31,10 @@ stages:
     repositories:
     - extensions
     path: ./publish
-    versionTagSuffix: 2.1-sdk
+    noCache: true
+    versionTagSuffix: v2.1-sdk
     env:
       SDK_VERSION_TAG: 2.1-sdk
-    args:
-    - SDK_VERSION_TAG
     copy:
     - Dockerfile
 
@@ -46,11 +45,10 @@ stages:
     repositories:
     - extensions
     path: ./publish
-    versionTagSuffix: 2.2-sdk
+    noCache: true
+    versionTagSuffix: v2.2-sdk
     env:
       SDK_VERSION_TAG: 2.2-sdk
-    args:
-    - SDK_VERSION_TAG
     copy:
     - Dockerfile
 
@@ -61,11 +59,10 @@ stages:
     repositories:
     - extensions
     path: ./publish
-    versionTagSuffix: 3.0-sdk
+    noCache: true
+    versionTagSuffix: v3.0-sdk
     env:
       SDK_VERSION_TAG: 3.0-sdk
-    args:
-    - SDK_VERSION_TAG
     copy:
     - Dockerfile
 
@@ -73,7 +70,7 @@ stages:
     image: extensions/docker:dev
     action: push
     container: dotnet
-    versionTagSuffix: 2.1-sdk
+    versionTagSuffix: v2.1-sdk
     repositories:
     - extensions
 
@@ -81,7 +78,7 @@ stages:
     image: extensions/docker:dev
     action: push
     container: dotnet
-    versionTagSuffix: 2.2-sdk
+    versionTagSuffix: v2.2-sdk
     repositories:
     - extensions
 
@@ -89,7 +86,7 @@ stages:
     image: extensions/docker:dev
     action: push
     container: dotnet
-    versionTagSuffix: 3.0-sdk
+    versionTagSuffix: v3.0-sdk
     repositories:
     - extensions
 
@@ -113,7 +110,7 @@ releases:
         image: extensions/docker:dev
         action: tag
         container: dotnet
-        versionTagSuffix: 2.1-sdk
+        versionTagSuffix: v2.1-sdk
         repositories:
         - extensions
         tags:
@@ -123,7 +120,7 @@ releases:
         image: extensions/docker:dev
         action: tag
         container: dotnet
-        versionTagSuffix: 2.2-sdk
+        versionTagSuffix: v2.2-sdk
         repositories:
         - extensions
         tags:
@@ -133,7 +130,7 @@ releases:
         image: extensions/docker:dev
         action: tag
         container: dotnet
-        versionTagSuffix: 3.0-sdk
+        versionTagSuffix: v3.0-sdk
         repositories:
         - extensions
         tags:
@@ -154,7 +151,7 @@ releases:
         image: extensions/docker:dev
         action: tag
         container: dotnet
-        versionTagSuffix: 2.1-sdk
+        versionTagSuffix: v2.1-sdk
         repositories:
         - extensions
         tags:
@@ -164,7 +161,7 @@ releases:
         image: extensions/docker:dev
         action: tag
         container: dotnet
-        versionTagSuffix: 2.2-sdk
+        versionTagSuffix: v2.2-sdk
         repositories:
         - extensions
         tags:
@@ -174,7 +171,7 @@ releases:
         image: extensions/docker:dev
         action: tag
         container: dotnet
-        versionTagSuffix: 3.0-sdk
+        versionTagSuffix: v3.0-sdk
         repositories:
         - extensions
         tags:
