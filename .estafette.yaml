@@ -70,6 +70,7 @@ stages:
     image: extensions/docker:dev
     action: push
     container: dotnet
+    noCache: true
     versionTagSuffix: v2.1-sdk
     repositories:
     - extensions
@@ -78,6 +79,7 @@ stages:
     image: extensions/docker:dev
     action: push
     container: dotnet
+    noCache: true
     versionTagSuffix: v2.2-sdk
     repositories:
     - extensions
@@ -86,6 +88,7 @@ stages:
     image: extensions/docker:dev
     action: push
     container: dotnet
+    noCache: true
     versionTagSuffix: v3.0-sdk
     repositories:
     - extensions
