@@ -215,6 +215,10 @@ func main() {
 		// dotnet build
 		args = []string{"build"}
 
+		if !*forceRestore {
+			args = append(args, "--no-restore")
+		}
+
 		if *buildVersion != "" {
 			args = append(args, fmt.Sprintf("/p:Version=%s", *buildVersion))
 		}
