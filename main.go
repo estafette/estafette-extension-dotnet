@@ -397,7 +397,7 @@ func main() {
 
 			argsForPackage = append(argsForPackage, files[i])
 
-			runCommandWithoutPrinting("dotnet", true, argsForPackage)
+			runCommandWithoutPrinting("dotnet", argsForPackage)
 		}
 
 	default:
@@ -470,31 +470,22 @@ func runTests(projectSuffix string, extraArgs ...string) {
 	}
 }
 
-func handleError(err error, exitOnError bool) {
+func handleError(err error) {
 	if err != nil {
-		if exitOnError {
-			log.Fatal(err)
-		} else {
-			log.Print(err)
-		}
+		log.Fatal(err)
 	}
 }
 
 func runCommand(command string, args []string) {
 	log.Printf("Running command '%v %v'...", command, strings.Join(args, " "))
-	runCommandWithoutPrinting(command, true, args)
+	runCommandWithoutPrinting(command, args)
 }
 
-func runCommandIgnoreFailure(command string, args []string) {
-	log.Printf("Running command '%v %v'...", command, strings.Join(args, " "))
-	runCommandWithoutPrinting(command, false, args)
-}
-
-func runCommandWithoutPrinting(command string, exitOnError bool, args []string) {
+func runCommandWithoutPrinting(command string, args []string) {
 	cmd := exec.Command(command, args...)
 	cmd.Dir = "/estafette-work"
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()
-	handleError(err, exitOnError)
+	handleError(err)
 }
