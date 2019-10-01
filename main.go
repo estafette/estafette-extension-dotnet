@@ -217,7 +217,7 @@ func main() {
 
 		// Run unit tests with the extra arguments for coverage.
 		*forceBuild = true
-		runTests("UnitTests", "/p:CollectCoverage=true", "/p:CoverletOutputFormat=opencover")
+		runTests("UnitTests", "/p:CollectCoverage=true", "/p:CoverletOutputFormat=opencover", "/p:CopyLocalLockFileAssemblies=true")
 
 		// dotnet sonarscanner end
 		args = []string{
