@@ -1,20 +1,23 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
 
 	"github.com/alecthomas/kingpin"
+	foundation "github.com/estafette/estafette-foundation"
+	"github.com/rs/zerolog/log"
 )
 
 var (
+	appgroup  string
+	app       string
 	version   string
 	branch    string
 	revision  string
@@ -46,18 +49,16 @@ func main() {
 	// parse command line parameters
 	kingpin.Parse()
 
+	// init log format from envvar ESTAFETTE_LOG_FORMAT
+	foundation.InitLoggingFromEnv(appgroup, app, version, branch, revision, buildDate)
+
+	// create context to cancel commands on sigterm
+	ctx := foundation.InitCancellationContext(context.Background())
+
 	workingDir, err := os.Getwd()
-
 	if err != nil {
-		log.Fatal("Couldn't determine current working directory.")
+		log.Fatal().Err(err).Msg("Couldn't determine current working directory.")
 	}
-
-	// log to stdout and hide timestamp
-	log.SetOutput(os.Stdout)
-	log.SetFlags(log.Flags() &^ (log.Ldate | log.Ltime))
-
-	// log startup message
-	log.Printf("Starting estafette-extension-dotnet version %v...", version)
 
 	// set defaults
 	builtInBuildVersion := os.Getenv("ESTAFETTE_BUILD_VERSION")
@@ -88,7 +89,7 @@ func main() {
 			".nuget/packages", // This is needed so the packages are restored into the working directory, so they're not lost between the stages.
 		}
 
-		runCommand("dotnet", args)
+		foundation.RunCommandWithArgs(ctx, "dotnet", args)
 
 	case "build": // Build the solution.
 
@@ -118,25 +119,25 @@ func main() {
 			args = append(args, "--no-restore")
 		}
 
-		runCommand("dotnet", args)
+		foundation.RunCommandWithArgs(ctx, "dotnet", args)
 
 	case "test": // Run the tests for the whole solution.
 
 		log.Printf("Running tests for every project in the ./test folder...\n")
 
-		runTests("")
+		runTests(ctx, "")
 
 	case "unit-test": // Run the unit tests.
 
 		log.Printf("Running tests for projects ending with UnitTests in the ./test folder...\n")
 
-		runTests("UnitTests")
+		runTests(ctx, "UnitTests")
 
 	case "integration-test": // Run the integration tests.
 
 		log.Printf("Running tests for projects ending with IntegrationTests in the ./test folder...\n")
 
-		runTests("IntegrationTests")
+		runTests(ctx, "IntegrationTests")
 
 	case "analyze-sonarqube": // Run the SonarQube analysis.
 
@@ -161,17 +162,17 @@ func main() {
 				var credentials []SonarQubeServerCredentials
 				err := json.Unmarshal([]byte(*sonarQubeServerCredentialsJSON), &credentials)
 				if err != nil {
-					log.Fatal("Failed unmarshalling credentials: ", err)
+					log.Fatal().Err(err).Msg("Failed unmarshalling credentials")
 				}
 
 				if len(credentials) == 0 {
-					log.Fatal("There were no credentials specified.")
+					log.Fatal().Msg("There were no credentials specified.")
 				}
 
 				if *sonarQubeServerName != "" {
 					credential := GetSonarQubeServerCredentialsByName(credentials, *sonarQubeServerName)
 					if credential == nil {
-						log.Fatalf("The NuGet Server credential with the name %v does not exist.", *sonarQubeServerName)
+						log.Fatal().Msgf("The NuGet Server credential with the name %v does not exist.", *sonarQubeServerName)
 					}
 
 					*sonarQubeServerURL = credential.AdditionalProperties.APIURL
@@ -182,7 +183,7 @@ func main() {
 					*sonarQubeServerURL = credential.AdditionalProperties.APIURL
 				}
 			} else {
-				log.Fatal("The SonarQube server URL has to be specified to run the analysis.")
+				log.Fatal().Msg("The SonarQube server URL has to be specified to run the analysis.")
 			}
 		}
 
@@ -200,7 +201,7 @@ func main() {
 			args = append(args, fmt.Sprintf("/version:%s", *buildVersion))
 		}
 
-		runCommand("dotnet", args)
+		foundation.RunCommandWithArgs(ctx, "dotnet", args)
 
 		// dotnet build
 		args = []string{"build"}
@@ -213,11 +214,11 @@ func main() {
 			args = append(args, "--no-restore")
 		}
 
-		runCommand("dotnet", args)
+		foundation.RunCommandWithArgs(ctx, "dotnet", args)
 
 		// Run unit tests with the extra arguments for coverage.
 		*forceBuild = true
-		runTests("UnitTests", "/p:CollectCoverage=true", "/p:CoverletOutputFormat=opencover", "/p:CopyLocalLockFileAssemblies=true")
+		runTests(ctx, "UnitTests", "/p:CollectCoverage=true", "/p:CoverletOutputFormat=opencover", "/p:CopyLocalLockFileAssemblies=true")
 
 		// dotnet sonarscanner end
 		args = []string{
@@ -225,7 +226,7 @@ func main() {
 			"end",
 		}
 
-		runCommand("dotnet", args)
+		foundation.RunCommandWithArgs(ctx, "dotnet", args)
 
 	case "publish": // Publish the final binaries.
 
@@ -250,7 +251,7 @@ func main() {
 			if _, err := os.Stat(*project); os.IsNotExist(err) {
 				*project = fmt.Sprintf("src/%s", solutionName)
 				if _, err := os.Stat(*project); os.IsNotExist(err) {
-					log.Fatal("The project to be published can not be found. Please specify it with the 'project' label.")
+					log.Fatal().Err(err).Msg("The project to be published can not be found. Please specify it with the 'project' label.")
 				}
 			}
 		}
@@ -276,7 +277,7 @@ func main() {
 			args = append(args, fmt.Sprintf("/p:Version=%s", *buildVersion))
 		}
 
-		runCommand("dotnet", args)
+		foundation.RunCommandWithArgs(ctx, "dotnet", args)
 
 	case "pack": // Pack the NuGet package.
 
@@ -312,7 +313,7 @@ func main() {
 			args = append(args, "--no-build")
 		}
 
-		runCommand("dotnet", args)
+		foundation.RunCommandWithArgs(ctx, "dotnet", args)
 
 	case "push-nuget": // Pushes the package(s) to NuGet.
 
@@ -339,17 +340,17 @@ func main() {
 				var credentials []NugetServerCredentials
 				err := json.Unmarshal([]byte(*nugetServerCredentialsJSON), &credentials)
 				if err != nil {
-					log.Fatal("Failed unmarshalling credentials: ", err)
+					log.Fatal().Err(err).Msg("Failed unmarshalling credentials")
 				}
 
 				if len(credentials) == 0 {
-					log.Fatal("There were no credentials specified.")
+					log.Fatal().Msg("There are no credentials specified.")
 				}
 
 				if *nugetServerName != "" {
 					credential := GetNugetServerCredentialsByName(credentials, *nugetServerName)
 					if credential == nil {
-						log.Fatalf("The NuGet Server credential with the name %v does not exist.", *nugetServerName)
+						log.Fatal().Msgf("The NuGet Server credential with the name %v does not exist.", *nugetServerName)
 					}
 
 					*nugetServerURL = credential.AdditionalProperties.APIURL
@@ -362,7 +363,7 @@ func main() {
 					*nugetServerAPIKey = credential.AdditionalProperties.APIKey
 				}
 			} else {
-				log.Fatal("The NuGet server URL and API key have to be specified to push a package.")
+				log.Fatal().Msg("The NuGet server URL and API key have to be specified to push a package.")
 			}
 		}
 
@@ -379,7 +380,7 @@ func main() {
 		})
 
 		if len(files) == 0 {
-			log.Fatal("No .nupkg files were found.")
+			log.Fatal().Msg("No .nupkg files were found.")
 		}
 
 		args := []string{
@@ -397,11 +398,11 @@ func main() {
 
 			argsForPackage = append(argsForPackage, files[i])
 
-			runCommandWithoutPrinting("dotnet", argsForPackage)
+			foundation.RunCommandWithArgs(ctx, "dotnet", argsForPackage)
 		}
 
 	default:
-		log.Fatal("Set `action: <action>` on this step to restore, build, test, unit-test, integration-test or publish.")
+		log.Fatal().Msg("Set `action: <action>` on this step to restore, build, test, unit-test, integration-test or publish.")
 	}
 }
 
@@ -423,7 +424,7 @@ func getSolutionName() (string, error) {
 }
 
 // Runs the unit tests for all projects in the ./test folder which have the passed in suffix in their name.
-func runTests(projectSuffix string, extraArgs ...string) {
+func runTests(ctx context.Context, projectSuffix string, extraArgs ...string) {
 	// Minimal example with defaults.
 	// image: extensions/dotnet:stable
 	// action: build
@@ -462,30 +463,10 @@ func runTests(projectSuffix string, extraArgs ...string) {
 
 				argsForProject = append(argsForProject, fmt.Sprintf("./test/%s", f.Name()))
 
-				runCommand("dotnet", argsForProject)
+				foundation.RunCommandWithArgs(ctx, "dotnet", argsForProject)
 			}
 		}
 	} else if !os.IsNotExist(err) { // If we got an error just because the "test" folder doesn't exist, that's fine, we can ignore. We only fail with an error if it was something else.
-		log.Fatal("Failed to read subdirectories under ./test.")
+		log.Fatal().Err(err).Msg("Failed to read subdirectories under ./test.")
 	}
-}
-
-func handleError(err error) {
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
-func runCommand(command string, args []string) {
-	log.Printf("Running command '%v %v'...", command, strings.Join(args, " "))
-	runCommandWithoutPrinting(command, args)
-}
-
-func runCommandWithoutPrinting(command string, args []string) {
-	cmd := exec.Command(command, args...)
-	cmd.Dir = "/estafette-work"
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	err := cmd.Run()
-	handleError(err)
 }

@@ -7,7 +7,8 @@ LABEL maintainer="estafette.io" \
 RUN apt-get update && apt-get install -y openjdk-8-jre \
     && dotnet tool install --global --version 4.7.1 dotnet-sonarscanner
 
-ENV PATH "$PATH:/root/.dotnet/tools"
+ENV PATH="$PATH:/root/.dotnet/tools" \
+    ESTAFETTE_LOG_FORMAT="console"
 
 COPY estafette-extension-dotnet /
 
