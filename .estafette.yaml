@@ -24,112 +24,116 @@ stages:
     commands:
     - go build -a -installsuffix cgo -ldflags "-X main.appgroup=${ESTAFETTE_LABEL_APP_GROUP} -X main.app=${ESTAFETTE_GIT_NAME} -X main.version=${ESTAFETTE_BUILD_VERSION} -X main.revision=${ESTAFETTE_GIT_REVISION} -X main.branch=${ESTAFETTE_GIT_BRANCH} -X main.buildDate=${ESTAFETTE_BUILD_DATETIME}" -o ./publish/${ESTAFETTE_GIT_NAME} .
 
-  bake-2.1:
-    image: extensions/docker:dev
-    action: build
-    container: dotnet
-    repositories:
-    - extensions
-    path: ./publish
-    noCache: true
-    versionTagSuffix: v2.1-sdk
-    env:
-      SDK_VERSION_TAG: 2.1-sdk
-    args:
-    - SDK_VERSION_TAG
-    dontExpand:
-    - PATH
-    - SDK_VERSION_TAG
+  bake:
+    parallelStages:
+      bake-2.1:
+        image: extensions/docker:dev
+        action: build
+        container: dotnet
+        repositories:
+        - extensions
+        path: ./publish
+        noCache: true
+        versionTagSuffix: v2.1-sdk
+        env:
+          SDK_VERSION_TAG: 2.1-sdk
+        args:
+        - SDK_VERSION_TAG
+        dontExpand:
+        - PATH
+        - SDK_VERSION_TAG
 
-  bake-2.2:
-    image: extensions/docker:dev
-    action: build
-    container: dotnet
-    repositories:
-    - extensions
-    path: ./publish
-    noCache: true
-    versionTagSuffix: v2.2-sdk
-    env:
-      SDK_VERSION_TAG: 2.2-sdk
-    args:
-    - SDK_VERSION_TAG
-    dontExpand:
-    - PATH
-    - SDK_VERSION_TAG
+      bake-2.2:
+        image: extensions/docker:dev
+        action: build
+        container: dotnet
+        repositories:
+        - extensions
+        path: ./publish
+        noCache: true
+        versionTagSuffix: v2.2-sdk
+        env:
+          SDK_VERSION_TAG: 2.2-sdk
+        args:
+        - SDK_VERSION_TAG
+        dontExpand:
+        - PATH
+        - SDK_VERSION_TAG
 
-  bake-3.0:
-    image: extensions/docker:dev
-    action: build
-    container: dotnet
-    repositories:
-    - extensions
-    path: ./publish
-    noCache: true
-    versionTagSuffix: v3.0-sdk
-    env:
-      SDK_VERSION_TAG: 3.0-sdk
-    args:
-    - SDK_VERSION_TAG
-    dontExpand:
-    - PATH
-    - SDK_VERSION_TAG
+      bake-3.0:
+        image: extensions/docker:dev
+        action: build
+        container: dotnet
+        repositories:
+        - extensions
+        path: ./publish
+        noCache: true
+        versionTagSuffix: v3.0-sdk
+        env:
+          SDK_VERSION_TAG: 3.0-sdk
+        args:
+        - SDK_VERSION_TAG
+        dontExpand:
+        - PATH
+        - SDK_VERSION_TAG
 
-  bake-3.1:
-    image: extensions/docker:dev
-    action: build
-    container: dotnet
-    dockerfile: Dockerfile.alpine
-    repositories:
-    - extensions
-    path: ./publish
-    noCache: true
-    versionTagSuffix: v3.1-sdk
-    env:
-      DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/core/sdk
-      SDK_VERSION_TAG: 3.1
-    args:
-    - DOCKER_REPOSITORY
-    - SDK_VERSION_TAG
-    dontExpand:
-    - PATH
-    - SDK_VERSION_TAG
+      bake-3.1:
+        image: extensions/docker:dev
+        action: build
+        container: dotnet
+        dockerfile: Dockerfile.alpine
+        repositories:
+        - extensions
+        path: ./publish
+        noCache: true
+        versionTagSuffix: v3.1-sdk
+        env:
+          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/core/sdk
+          SDK_VERSION_TAG: 3.1
+        args:
+        - DOCKER_REPOSITORY
+        - SDK_VERSION_TAG
+        dontExpand:
+        - PATH
+        - SDK_VERSION_TAG
 
-  push-container-image-2.1:
-    image: extensions/docker:dev
-    action: push
-    container: dotnet
-    noCache: true
-    versionTagSuffix: v2.1-sdk
-    repositories:
-    - extensions
+  push:
+    parallelStages:
+      push-container-image-2.1:
+        image: extensions/docker:dev
+        action: push
+        container: dotnet
+        noCache: true
+        versionTagSuffix: v2.1-sdk
+        repositories:
+        - extensions
 
-  push-container-image-2.2:
-    image: extensions/docker:dev
-    action: push
-    container: dotnet
-    noCache: true
-    versionTagSuffix: v2.2-sdk
-    repositories:
-    - extensions
+      push-container-image-2.2:
+        image: extensions/docker:dev
+        action: push
+        container: dotnet
+        noCache: true
+        versionTagSuffix: v2.2-sdk
+        repositories:
+        - extensions
 
-  push-container-image-3.0:
-    image: extensions/docker:dev
-    action: push
-    container: dotnet
-    noCache: true
-    versionTagSuffix: v3.0-sdk
-    repositories:
-    - extensions
+      push-container-image-3.0:
+        image: extensions/docker:dev
+        action: push
+        container: dotnet
+        noCache: true
+        versionTagSuffix: v3.0-sdk
+        repositories:
+        - extensions
 
-  push-container-image-3.1:
-    image: extensions/docker:dev
-    action: push
-    container: dotnet
-    noCache: true
-    versionTagSuffix: v3.1-sdk
-    repositories:
-    - extensions
+      push-container-image-3.1:
+        image: extensions/docker:dev
+        action: push
+        container: dotnet
+        noCache: true
+        versionTagSuffix: v3.1-sdk
+        repositories:
+        - extensions
 
   slack-notify:
     image: extensions/slack-build-status:dev
@@ -147,45 +151,47 @@ releases:
         name: self
         branch: .+
     stages:
-      tag-container-image-2.1:
-        image: extensions/docker:dev
-        action: tag
-        container: dotnet
-        versionTagSuffix: v2.1-sdk
-        repositories:
-        - extensions
-        tags:
-        - 2.1-dev
+      tag:
+        parallelStages:
+          tag-container-image-2.1:
+            image: extensions/docker:dev
+            action: tag
+            container: dotnet
+            versionTagSuffix: v2.1-sdk
+            repositories:
+            - extensions
+            tags:
+            - 2.1-dev
 
-      tag-container-image-2.2:
-        image: extensions/docker:dev
-        action: tag
-        container: dotnet
-        versionTagSuffix: v2.2-sdk
-        repositories:
-        - extensions
-        tags:
-        - 2.2-dev
+          tag-container-image-2.2:
+            image: extensions/docker:dev
+            action: tag
+            container: dotnet
+            versionTagSuffix: v2.2-sdk
+            repositories:
+            - extensions
+            tags:
+            - 2.2-dev
 
-      tag-container-image-3.0:
-        image: extensions/docker:dev
-        action: tag
-        container: dotnet
-        versionTagSuffix: v3.0-sdk
-        repositories:
-        - extensions
-        tags:
-        - 3.0-dev
+          tag-container-image-3.0:
+            image: extensions/docker:dev
+            action: tag
+            container: dotnet
+            versionTagSuffix: v3.0-sdk
+            repositories:
+            - extensions
+            tags:
+            - 3.0-dev
 
-      tag-container-image-3.1:
-        image: extensions/docker:dev
-        action: tag
-        container: dotnet
-        versionTagSuffix: v3.1-sdk
-        repositories:
-        - extensions
-        tags:
-        - 3.1-dev
+          tag-container-image-3.1:
+            image: extensions/docker:dev
+            action: tag
+            container: dotnet
+            versionTagSuffix: v3.1-sdk
+            repositories:
+            - extensions
+            tags:
+            - 3.1-dev
 
       slack-notify:
         image: extensions/slack-build-status:dev
@@ -198,45 +204,47 @@ releases:
 
   stable:
     stages:
-      tag-container-image-2.1:
-        image: extensions/docker:dev
-        action: tag
-        container: dotnet
-        versionTagSuffix: v2.1-sdk
-        repositories:
-        - extensions
-        tags:
-        - 2.1-stable
+      tag:
+        parallelStages:
+          tag-container-image-2.1:
+            image: extensions/docker:dev
+            action: tag
+            container: dotnet
+            versionTagSuffix: v2.1-sdk
+            repositories:
+            - extensions
+            tags:
+            - 2.1-stable
 
-      tag-container-image-2.2:
-        image: extensions/docker:dev
-        action: tag
-        container: dotnet
-        versionTagSuffix: v2.2-sdk
-        repositories:
-        - extensions
-        tags:
-        - 2.2-stable
+          tag-container-image-2.2:
+            image: extensions/docker:dev
+            action: tag
+            container: dotnet
+            versionTagSuffix: v2.2-sdk
+            repositories:
+            - extensions
+            tags:
+            - 2.2-stable
 
-      tag-container-image-3.0:
-        image: extensions/docker:dev
-        action: tag
-        container: dotnet
-        versionTagSuffix: v3.0-sdk
-        repositories:
-        - extensions
-        tags:
-        - 3.0-stable
+          tag-container-image-3.0:
+            image: extensions/docker:dev
+            action: tag
+            container: dotnet
+            versionTagSuffix: v3.0-sdk
+            repositories:
+            - extensions
+            tags:
+            - 3.0-stable
 
-      tag-container-image-3.1:
-        image: extensions/docker:dev
-        action: tag
-        container: dotnet
-        versionTagSuffix: v3.1-sdk
-        repositories:
-        - extensions
-        tags:
-        - 3.1-stable
+          tag-container-image-3.1:
+            image: extensions/docker:dev
+            action: tag
+            container: dotnet
+            versionTagSuffix: v3.1-sdk
+            repositories:
+            - extensions
+            tags:
+            - 3.1-stable
 
       slack-notify:
         image: extensions/slack-build-status:dev
