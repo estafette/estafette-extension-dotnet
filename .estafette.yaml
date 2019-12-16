@@ -81,7 +81,7 @@ stages:
         image: extensions/docker:dev
         action: build
         container: dotnet
-        dockerfile: Dockerfile.alpine
+        dockerfile: Dockerfile
         repositories:
         - extensions
         path: ./publish
