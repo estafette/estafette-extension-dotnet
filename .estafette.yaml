@@ -87,7 +87,7 @@ stages:
     versionTagSuffix: v3.1-sdk
     env:
       DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/core/sdk
-      SDK_VERSION_TAG: 3.1-alpine
+      SDK_VERSION_TAG: 3.1
     args:
     - DOCKER_REPOSITORY
     - SDK_VERSION_TAG
