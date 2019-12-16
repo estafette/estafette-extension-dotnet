@@ -40,8 +40,6 @@ stages:
     dontExpand:
     - PATH
     - SDK_VERSION_TAG
-    copy:
-    - Dockerfile
 
   bake-2.2:
     image: extensions/docker:dev
@@ -59,8 +57,6 @@ stages:
     dontExpand:
     - PATH
     - SDK_VERSION_TAG
-    copy:
-    - Dockerfile
 
   bake-3.0:
     image: extensions/docker:dev
@@ -78,13 +74,12 @@ stages:
     dontExpand:
     - PATH
     - SDK_VERSION_TAG
-    copy:
-    - Dockerfile
 
   bake-3.1:
     image: extensions/docker:dev
     action: build
     container: dotnet
+    dockerfile: Dockerfile.alpine
     repositories:
     - extensions
     path: ./publish
@@ -99,8 +94,6 @@ stages:
     dontExpand:
     - PATH
     - SDK_VERSION_TAG
-    copy:
-    - Dockerfile
 
   push-container-image-2.1:
     image: extensions/docker:dev
