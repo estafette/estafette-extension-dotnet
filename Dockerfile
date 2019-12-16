@@ -1,5 +1,6 @@
 ARG SDK_VERSION_TAG
-FROM microsoft/dotnet:${SDK_VERSION_TAG}
+ARG DOCKER_REPOSITORY=microsoft/dotnet
+FROM ${DOCKER_REPOSITORY}:${SDK_VERSION_TAG}
 
 LABEL maintainer="estafette.io" \
       description="The estafette-extension-dotnet component is an Estafette extension to build and publish .NET Core applications and libraries."
