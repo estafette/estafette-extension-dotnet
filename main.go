@@ -388,12 +388,11 @@ func main() {
 
 		args := []string{
 			"nuget",
-			"--verbosity",
+			"push",
 			"--source",
 			*nugetServerURL,
 			"--api-key",
 			*nugetServerAPIKey,
-			"push",
 		}
 
 		for i := 0; i < len(files); i++ {
