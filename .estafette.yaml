@@ -41,7 +41,9 @@ stages:
         - SDK_VERSION_TAG
         dontExpand:
         - PATH
+        - DOCKER_REPOSITORY
         - SDK_VERSION_TAG
+        - OPENJDK_PACKAGE
 
       bake-2.2:
         image: extensions/docker:dev
@@ -58,7 +60,9 @@ stages:
         - SDK_VERSION_TAG
         dontExpand:
         - PATH
+        - DOCKER_REPOSITORY
         - SDK_VERSION_TAG
+        - OPENJDK_PACKAGE
 
       bake-3.0:
         image: extensions/docker:dev
@@ -75,7 +79,9 @@ stages:
         - SDK_VERSION_TAG
         dontExpand:
         - PATH
+        - DOCKER_REPOSITORY
         - SDK_VERSION_TAG
+        - OPENJDK_PACKAGE
 
       bake-3.1:
         image: extensions/docker:dev
@@ -90,13 +96,36 @@ stages:
         env:
           DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/core/sdk
           SDK_VERSION_TAG: 3.1
-          ARG OPENJDK_PACKAGE: openjdk-11-jdk-headless
+          OPENJDK_PACKAGE: openjdk-11-jdk-headless
         args:
         - DOCKER_REPOSITORY
         - SDK_VERSION_TAG
-        - ARG OPENJDK_PACKAGE
+        - OPENJDK_PACKAGE
         dontExpand:
         - PATH
+        - DOCKER_REPOSITORY
+        - SDK_VERSION_TAG
+        - OPENJDK_PACKAGE
+
+      bake-3.1-alpine:
+        image: extensions/docker:dev
+        action: build
+        container: dotnet
+        dockerfile: Dockerfile.alpine
+        repositories:
+        - extensions
+        path: ./publish
+        noCache: true
+        versionTagSuffix: v3.1-alpine-sdk
+        env:
+          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/core/sdk
+          SDK_VERSION_TAG: 3.1-alpine
+        args:
+        - DOCKER_REPOSITORY
+        - SDK_VERSION_TAG
+        dontExpand:
+        - PATH
+        - DOCKER_REPOSITORY
         - SDK_VERSION_TAG
 
   push:
@@ -134,6 +163,15 @@ stages:
         container: dotnet
         noCache: true
         versionTagSuffix: v3.1-sdk
+        repositories:
+        - extensions
+
+      push-container-image-3.1-alpine:
+        image: extensions/docker:dev
+        action: push
+        container: dotnet
+        noCache: true
+        versionTagSuffix: v3.1-alpine-sdk
         repositories:
         - extensions
 
@@ -195,6 +233,16 @@ releases:
             tags:
             - 3.1-dev
 
+          tag-container-image-3.1-alpine:
+            image: extensions/docker:dev
+            action: tag
+            container: dotnet
+            versionTagSuffix: v3.1-alpine-sdk
+            repositories:
+            - extensions
+            tags:
+            - 3.1-alpine-dev
+
       slack-notify:
         image: extensions/slack-build-status:dev
         workspace: estafette
@@ -247,6 +295,16 @@ releases:
             - extensions
             tags:
             - 3.1-stable
+
+          tag-container-image-3.1-alpine:
+            image: extensions/docker:dev
+            action: tag
+            container: dotnet
+            versionTagSuffix: v3.1-alpine-sdk
+            repositories:
+            - extensions
+            tags:
+            - 3.1-alpine-stable
 
       slack-notify:
         image: extensions/slack-build-status:dev
