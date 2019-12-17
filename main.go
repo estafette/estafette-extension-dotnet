@@ -327,9 +327,6 @@ func main() {
 		// nugetServerUrl: https://nuget.mycompany.com
 		// nugetServerApikey: 3a4cdeca-3d5b-41a2-ac59-ae4b5c5eaece
 
-		log.Printf("Printing environment variables...\n")
-		log.Print(os.Environ())
-
 		log.Printf("Publishing the nuget package(s)...\n")
 
 		// Determine the NuGet server credentials
