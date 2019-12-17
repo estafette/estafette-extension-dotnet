@@ -386,9 +386,12 @@ func main() {
 			log.Fatal().Msg("No .nupkg files were found.")
 		}
 
-		args := []string{
+		args1 := []string{
 			"nuget",
 			"push",
+		}
+
+		args2 := []string{
 			"--source",
 			*nugetServerURL,
 			"--api-key",
@@ -396,10 +399,10 @@ func main() {
 		}
 
 		for i := 0; i < len(files); i++ {
-			argsForPackage := make([]string, len(args)+1)
-			copy(argsForPackage, args)
-
+			argsForPackage := []string{}
+			argsForPackage = append(argsForPackage, args1...)
 			argsForPackage = append(argsForPackage, files[i])
+			argsForPackage = append(argsForPackage, args2...)
 
 			foundation.RunCommandWithArgs(ctx, "dotnet", argsForPackage)
 		}
