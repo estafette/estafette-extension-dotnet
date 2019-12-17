@@ -387,7 +387,9 @@ func main() {
 		}
 
 		args := []string{
+			"-d",
 			"nuget",
+			"-v",
 			"push",
 			"--source",
 			*nugetServerURL,
