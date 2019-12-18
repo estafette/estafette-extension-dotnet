@@ -96,7 +96,7 @@ stages:
         env:
           DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/core/sdk
           SDK_VERSION_TAG: 3.1
-          OPENJDK_PACKAGE: openjdk-11-jdk-headless
+          OPENJDK_PACKAGE: openjdk-11-jdk
         args:
         - DOCKER_REPOSITORY
         - SDK_VERSION_TAG

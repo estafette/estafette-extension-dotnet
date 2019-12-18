@@ -1,6 +1,6 @@
 ARG SDK_VERSION_TAG
 ARG DOCKER_REPOSITORY=microsoft/dotnet
-ARG OPENJDK_PACKAGE=openjdk-8-jre-headless
+ARG OPENJDK_PACKAGE=openjdk-8-jre
 FROM ${DOCKER_REPOSITORY}:${SDK_VERSION_TAG}
 
 LABEL maintainer="estafette.io" \
