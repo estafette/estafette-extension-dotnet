@@ -128,6 +128,45 @@ stages:
         - DOCKER_REPOSITORY
         - SDK_VERSION_TAG
 
+
+  check-containers:
+    parallelStages:
+      check-efficiency-3.1:
+        image: extensions/docker:stable
+        action: dive
+        container: dotnet
+        versionTagSuffix: v3.1-sdk
+        repositories:
+        - extensions
+
+      vulnerability-scan-3.1:
+        image: extensions/docker:stable
+        action: trivy
+        repositories:
+        - eu.gcr.io/travix-com
+        container: dotnet
+        versionTagSuffix: v3.1-sdk
+        repositories:
+        - extensions
+
+      check-efficiency-3.1-alpine:
+        image: extensions/docker:stable
+        action: dive
+        container: dotnet
+        versionTagSuffix: v3.1-alpine-sdk
+        repositories:
+        - extensions
+
+      vulnerability-scan-3.1-alpine:
+        image: extensions/docker:stable
+        action: trivy
+        repositories:
+        - eu.gcr.io/travix-com
+        container: dotnet
+        versionTagSuffix: v3.1-alpine-sdk
+        repositories:
+        - extensions
+
   push:
     parallelStages:
       push-container-image-2.1:
