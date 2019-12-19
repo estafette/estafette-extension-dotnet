@@ -7,7 +7,11 @@ ARG OPENJDK_PACKAGE=openjdk-8-jre
 LABEL maintainer="estafette.io" \
       description="The estafette-extension-dotnet component is an Estafette extension to build and publish .NET Core applications and libraries."
 
-RUN apt-get update && apt-get install -y $OPENJDK_PACKAGE \
+RUN grep security /etc/apt/sources.list | tee /etc/apt/security.sources.list && \
+    apt-get update && \
+    apt-get upgrade -y -o Dir::Etc::SourceList=/etc/apt/security.sources.list && \
+    apt-get install -yq \
+        $OPENJDK_PACKAGE \
     && java -version \
     && dotnet tool install --global --version 4.7.1 dotnet-sonarscanner
 
