@@ -39,6 +39,8 @@ var (
 	nugetServerAPIKey              = kingpin.Flag("nugetServerApiKey", "The API key of the NuGet server.").Envar("ESTAFETTE_EXTENSION_NUGET_SERVER_API_KEY").String()
 	nugetServerCredentialsJSON     = kingpin.Flag("nugetServerCredentials", "NuGet Server credentials configured at server level, passed in to this trusted extension.").Envar("ESTAFETTE_CREDENTIALS_NUGET_SERVER").String()
 	nugetServerName                = kingpin.Flag("nugetServerName", "The name of the preferred NuGet server from the preconfigured credentials.").Envar("ESTAFETTE_EXTENSION_NUGET_SERVER_NAME").String()
+	publishSingleFile              = kingpin.Flag("publishSingleFile", "Sets PublishSingleFile parameter for the publish action when true.").Envar("ESTAFETTE_EXTENSION_PUBLISH_SINGLE_FILE").Default("false").Bool()
+	publishTrimmed                 = kingpin.Flag("publishTrimmed", "Sets PublishTrimmed parameter for the publish action when true.").Envar("ESTAFETTE_EXTENSION_PUBLISH_TRIMMED").Default("false").Bool()
 	sonarQubeServerURL             = kingpin.Flag("sonarQubeServerUrl", "The URL of the SonarQube Server to which we send analysis reports.").Envar("ESTAFETTE_EXTENSION_SONARQUBE_SERVER_URL").String()
 	sonarQubeServerCredentialsJSON = kingpin.Flag("sonarQubeServerCredentials", "SonarQube Server credentials configured at server level, passed in to this trusted extension.").Envar("ESTAFETTE_CREDENTIALS_SONARQUBE_SERVER").String()
 	sonarQubeServerName            = kingpin.Flag("sonarQubeServerName", "The name of the preferred SonarQube server from the preconfigured credentials.").Envar("ESTAFETTE_EXTENSION_SONARQUBE_SERVER_NAME").String()
@@ -275,6 +277,12 @@ func main() {
 
 		if *buildVersion != "" {
 			args = append(args, fmt.Sprintf("/p:Version=%s", *buildVersion))
+		}
+		if *publishSingleFile {
+			args = append(args, "/p:PublishSingleFile=true")
+		}
+		if *publishTrimmed {
+			args = append(args, "/p:PublishTrimmed=true")
 		}
 
 		foundation.RunCommandWithArgs(ctx, "dotnet", args)
