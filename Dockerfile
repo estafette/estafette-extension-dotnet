@@ -10,6 +10,7 @@ LABEL maintainer="estafette.io" \
 RUN grep security /etc/apt/sources.list | tee /etc/apt/security.sources.list && \
     apt-get update && \
     apt-get upgrade -y -o Dir::Etc::SourceList=/etc/apt/security.sources.list && \
+    apt-get install openssl && \
     apt-get install -yq \
         $OPENJDK_PACKAGE \
     && java -version \
