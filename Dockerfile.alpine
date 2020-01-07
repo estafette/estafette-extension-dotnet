@@ -8,8 +8,8 @@ LABEL maintainer="estafette.io" \
 RUN apk update \
     && apk add --no-cache --upgrade \
         openssl \
-    && rm -rf /var/cache/apk/*
-    apk add openjdk8-jre \
+    && rm -rf /var/cache/apk/* \
+    && apk add openjdk8-jre \
     && java -version \
     && dotnet tool install --global --version 4.7.1 dotnet-sonarscanner
 
