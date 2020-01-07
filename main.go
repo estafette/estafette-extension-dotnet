@@ -431,7 +431,7 @@ func getSolutionName() (string, error) {
 	if err == nil {
 		for _, f := range files {
 			if strings.HasSuffix(f.Name(), ".sln") {
-				return strings.TrimRight(f.Name(), ".sln"), nil
+				return strings.TrimSuffix(f.Name(), ".sln"), nil
 			}
 		}
 
