@@ -35,6 +35,7 @@ var (
 	forceRestore                   = kingpin.Flag("forceRestore", "Execute the restore on every action.").Envar("ESTAFETTE_EXTENSION_FORCE_RESTORE").Default("false").Bool()
 	forceBuild                     = kingpin.Flag("forceBuild", "Execute the build on every action.").Envar("ESTAFETTE_EXTENSION_FORCE_BUILD").Default("false").Bool()
 	outputFolder                   = kingpin.Flag("outputFolder", "The folder into which the publish output is generated.").Envar("ESTAFETTE_EXTENSION_OUTPUT_FOLDER").String()
+	nugetSources                   = kingpin.Flag("nugetSources", "String array of nuget sources to restore from.").Envar("ESTAFETTE_EXTENSION_SOURCES").String()
 	nugetServerURL                 = kingpin.Flag("nugetServerUrl", "The URL of the NuGet server.").Envar("ESTAFETTE_EXTENSION_NUGET_SERVER_URL").String()
 	nugetServerAPIKey              = kingpin.Flag("nugetServerApiKey", "The API key of the NuGet server.").Envar("ESTAFETTE_EXTENSION_NUGET_SERVER_API_KEY").String()
 	nugetServerCredentialsJSON     = kingpin.Flag("nugetServerCredentials", "NuGet Server credentials configured at server level, passed in to this trusted extension.").Envar("ESTAFETTE_CREDENTIALS_NUGET_SERVER").String()
@@ -85,11 +86,19 @@ func main() {
 		// action: restore
 
 		// build docker image
-		log.Printf("Restoring pacakges...\n")
+		log.Printf("Restoring packages...\n")
 		args := []string{
 			"restore",
 			"--packages",
 			".nuget/packages", // This is needed so the packages are restored into the working directory, so they're not lost between the stages.
+		}
+
+		if *nugetSources != "" {
+			nugetSourcesArray := strings.Split(*nugetSources, ",")
+
+			for _, source := range nugetSourcesArray {
+				args = append(args, "--source", source)
+			}
 		}
 
 		foundation.RunCommandWithArgs(ctx, "dotnet", args)
