@@ -254,6 +254,7 @@ func main() {
 		// runtimteId: windows10-x64
 		// outputFolder: ./binaries
 		// buildVersion: 1.5.0
+		// forceRestore: true
 
 		log.Printf("Publishing the binaries...\n")
 
@@ -297,6 +298,10 @@ func main() {
 		}
 		if *publishTrimmed {
 			args = append(args, "/p:PublishTrimmed=true")
+		}
+
+		if !*forceRestore {
+			args = append(args, "--no-restore")
 		}
 
 		foundation.RunCommandWithArgs(ctx, "dotnet", args)
