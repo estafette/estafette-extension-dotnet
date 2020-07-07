@@ -412,8 +412,6 @@ func main() {
 
 		args1 := []string{
 			"nuget",
-			"--verbosity",
-			"Debug",
 			"push",
 		}
 
