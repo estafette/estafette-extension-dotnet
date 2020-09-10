@@ -15,7 +15,7 @@ RUN grep security /etc/apt/sources.list | tee /etc/apt/security.sources.list && 
         libc-bin \
         multiarch-support \
     && java -version \
-    && dotnet tool install --global --version 4.7.1 dotnet-sonarscanner
+    && dotnet tool install --global --version 4.10.0 dotnet-sonarscanner
 
 ENV PATH="$PATH:/root/.dotnet/tools" \
     ESTAFETTE_LOG_FORMAT="console"
