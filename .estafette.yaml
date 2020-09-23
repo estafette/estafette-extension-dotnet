@@ -13,7 +13,7 @@ version:
     minor: 1
     patch: '{{auto}}'
     labelTemplate: '{{branch}}'
-    releaseBranch: master
+    releaseBranch: main
 
 stages:
   build:
