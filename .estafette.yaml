@@ -128,7 +128,6 @@ stages:
         - DOCKER_REPOSITORY
         - SDK_VERSION_TAG
 
-
       bake-5.0:
         image: extensions/docker:dev
         action: build
@@ -140,7 +139,7 @@ stages:
         noCache: true
         versionTagSuffix: v5.0-sdk
         env:
-          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/core/sdk
+          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/sdk
           SDK_VERSION_TAG: 5.0
           OPENJDK_PACKAGE: openjdk-11-jdk
         args:
