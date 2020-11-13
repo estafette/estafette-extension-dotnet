@@ -141,7 +141,7 @@ stages:
         env:
           DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/sdk
           SDK_VERSION_TAG: "5.0"
-          OPENJDK_PACKAGE: openjdk-15-jdk
+          OPENJDK_PACKAGE: openjdk-11-jdk
         args:
         - DOCKER_REPOSITORY
         - SDK_VERSION_TAG
