@@ -140,8 +140,8 @@ stages:
         versionTagSuffix: v5.0-sdk
         env:
           DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/sdk
-          SDK_VERSION_TAG: 5.0
-          OPENJDK_PACKAGE: openjdk-11-jdk
+          SDK_VERSION_TAG: "5.0"
+          OPENJDK_PACKAGE: openjdk-15-jdk
         args:
         - DOCKER_REPOSITORY
         - SDK_VERSION_TAG
