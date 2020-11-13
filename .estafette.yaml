@@ -128,6 +128,31 @@ stages:
         - DOCKER_REPOSITORY
         - SDK_VERSION_TAG
 
+
+      bake-5.0:
+        image: extensions/docker:dev
+        action: build
+        container: dotnet
+        dockerfile: Dockerfile.5.0
+        repositories:
+        - extensions
+        path: ./publish
+        noCache: true
+        versionTagSuffix: v5.0-sdk
+        env:
+          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/core/sdk
+          SDK_VERSION_TAG: 5.0
+          OPENJDK_PACKAGE: openjdk-11-jdk
+        args:
+        - DOCKER_REPOSITORY
+        - SDK_VERSION_TAG
+        - OPENJDK_PACKAGE
+        dontExpand:
+        - PATH
+        - DOCKER_REPOSITORY
+        - SDK_VERSION_TAG
+        - OPENJDK_PACKAGE
+
   check-containers:
     parallelStages:
       check-efficiency-3.1:
@@ -163,6 +188,24 @@ stages:
         - eu.gcr.io/travix-com
         container: dotnet
         versionTagSuffix: v3.1-alpine-sdk
+        repositories:
+        - extensions
+
+      check-efficiency-5.0:
+        image: extensions/docker:stable
+        action: dive
+        container: dotnet
+        versionTagSuffix: v5.0-sdk
+        repositories:
+        - extensions
+
+      vulnerability-scan-5.0:
+        image: extensions/docker:stable
+        action: trivy
+        repositories:
+        - eu.gcr.io/travix-com
+        container: dotnet
+        versionTagSuffix: v5.0-sdk
         repositories:
         - extensions
 
@@ -210,6 +253,15 @@ stages:
         container: dotnet
         noCache: true
         versionTagSuffix: v3.1-alpine-sdk
+        repositories:
+        - extensions
+
+      push-container-image-5.0:
+        image: extensions/docker:dev
+        action: push
+        container: dotnet
+        noCache: true
+        versionTagSuffix: v5.0-sdk
         repositories:
         - extensions
 
@@ -281,6 +333,16 @@ releases:
             tags:
             - 3.1-alpine-dev
 
+          tag-container-image-5.0:
+            image: extensions/docker:dev
+            action: tag
+            container: dotnet
+            versionTagSuffix: v5.0-sdk
+            repositories:
+            - extensions
+            tags:
+            - 5.0-dev
+
       slack-notify:
         image: extensions/slack-build-status:dev
         workspace: estafette
@@ -343,6 +405,16 @@ releases:
             - extensions
             tags:
             - 3.1-alpine-stable
+
+          tag-container-image-5.0:
+            image: extensions/docker:dev
+            action: tag
+            container: dotnet
+            versionTagSuffix: v5.0-sdk
+            repositories:
+            - extensions
+            tags:
+            - 5.0-stable
 
       slack-notify:
         image: extensions/slack-build-status:dev
