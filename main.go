@@ -46,6 +46,7 @@ var (
 	sonarQubeServerURL             = kingpin.Flag("sonarQubeServerUrl", "The URL of the SonarQube Server to which we send analysis reports.").Envar("ESTAFETTE_EXTENSION_SONARQUBE_SERVER_URL").String()
 	sonarQubeServerCredentialsJSON = kingpin.Flag("sonarQubeServerCredentials", "SonarQube Server credentials configured at server level, passed in to this trusted extension.").Envar("ESTAFETTE_CREDENTIALS_SONARQUBE_SERVER").String()
 	sonarQubeServerName            = kingpin.Flag("sonarQubeServerName", "The name of the preferred SonarQube server from the preconfigured credentials.").Envar("ESTAFETTE_EXTENSION_SONARQUBE_SERVER_NAME").String()
+	sonarQubeCoverageExclusions    = kingpin.Flag("sonarQubeCoverageExclusions", "The path for the code to be excluded on SonarQube Scan.").Envar("ESTAFETTE_EXTENSION_SONARQUBE_COVERAGE_EXCLUSIONS").String()
 )
 
 func main() {
@@ -161,6 +162,7 @@ func main() {
 		// image: extensions/dotnet:stable
 		// action: analyze-sonarqube
 		// sonarQubeServerUrl: https://my-sonar-server.example.com
+		// sonarQubeCoverageExclusions: **Tests.cs
 
 		log.Printf("Running the SonarQube analysis...\n")
 
@@ -198,6 +200,9 @@ func main() {
 				log.Fatal().Msg("The SonarQube server URL has to be specified to run the analysis.")
 			}
 		}
+		if *sonarQubeCoverageExclusions == "" {
+			*sonarQubeCoverageExclusions = "**Tests.cs"
+		}
 
 		// dotnet sonarscanner begin /k:"Travix.Core.ShoppingCart" /d:sonar.host.url=https://sonarqube.travix.com /d:sonar.cs.opencover.reportsPaths="**\coverage.opencover.xml" /d:sonar.coverage.exclusions="**Tests.cs"
 		args := []string{
@@ -206,7 +211,7 @@ func main() {
 			fmt.Sprintf("/key:%s", solutionName),
 			fmt.Sprintf("/d:sonar.host.url=%s", *sonarQubeServerURL),
 			"/d:sonar.cs.opencover.reportsPaths=\"**\\coverage.opencover.xml\"",
-			"/d:sonar.coverage.exclusions=\"**Tests.cs\"",
+			fmt.Sprintf("/d:sonar.coverage.exclusions=\"%s\"", *sonarQubeCoverageExclusions),
 		}
 
 		if *buildVersion != "" {
