@@ -38,7 +38,7 @@ var (
 	nugetSources                   = kingpin.Flag("nugetSources", "String array of nuget sources to restore from.").Envar("ESTAFETTE_EXTENSION_SOURCES").String()
 	nugetServerURL                 = kingpin.Flag("nugetServerUrl", "The URL of the NuGet server.").Envar("ESTAFETTE_EXTENSION_NUGET_SERVER_URL").String()
 	nugetServerAPIKey              = kingpin.Flag("nugetServerApiKey", "The API key of the NuGet server.").Envar("ESTAFETTE_EXTENSION_NUGET_SERVER_API_KEY").String()
-	nugetServerCredentialsJSON     = kingpin.Flag("nugetServerCredentials", "NuGet Server credentials configured at server level, passed in to this trusted extension.").Envar("ESTAFETTE_CREDENTIALS_NUGET_SERVER").String()
+	nugetServerCredentialsJSONPath = kingpin.Flag("nugetServerCredentials-path", "Path to file with NuGet Server credentials configured at server level, passed in to this trusted extension.").Default("/credentials/nuget_server.json").String()
 	nugetServerName                = kingpin.Flag("nugetServerName", "The name of the preferred NuGet server from the preconfigured credentials.").Envar("ESTAFETTE_EXTENSION_NUGET_SERVER_NAME").String()
 	publishReadyToRun              = kingpin.Flag("publishReadyToRun", "Sets PublishReadyToRun parameter for the publish action when true.").Envar("ESTAFETTE_EXTENSION_PUBLISH_READY_TO_RUN").Default("false").Bool()
 	publishSingleFile              = kingpin.Flag("publishSingleFile", "Sets PublishSingleFile parameter for the publish action when true.").Envar("ESTAFETTE_EXTENSION_PUBLISH_SINGLE_FILE").Default("false").Bool()
@@ -367,10 +367,22 @@ func main() {
 		// 3. If we have the default credentials from the server level, and nugetServerName is not specified, we take the first credential. (This is the sensible default if we're using only one NuGet server.)
 
 		if *nugetServerURL == "" || *nugetServerAPIKey == "" {
-			if *nugetServerCredentialsJSON != "" {
+
+			// use mounted credential file if present instead of relying on an envvar
+			if runtime.GOOS == "windows" {
+				*nugetServerCredentialsJSONPath = "C:" + *nugetServerCredentialsJSONPath
+			}
+			if foundation.FileExists(*nugetServerCredentialsJSONPath) {
 				log.Printf("Unmarshalling credentials...")
+
+				log.Info().Msgf("Reading credentials from file at path %v...", *nugetServerCredentialsJSONPath)
+				credentialsFileContent, err := ioutil.ReadFile(*nugetServerCredentialsJSONPath)
+				if err != nil {
+					log.Fatal().Msgf("Failed reading credential file at path %v.", *nugetServerCredentialsJSONPath)
+				}
+
 				var credentials []NugetServerCredentials
-				err := json.Unmarshal([]byte(*nugetServerCredentialsJSON), &credentials)
+				err = json.Unmarshal(credentialsFileContent, &credentials)
 				if err != nil {
 					log.Fatal().Err(err).Msg("Failed unmarshalling credentials")
 				}
