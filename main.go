@@ -27,26 +27,26 @@ var (
 
 var (
 	// flags
-	action                         = kingpin.Flag("action", "Any of the following actions: restore, build, test, unit-test, integration-test, publish, pack, push-nuget").Envar("ESTAFETTE_EXTENSION_ACTION").String()
-	configuration                  = kingpin.Flag("configuration", "The build configuration.").Envar("ESTAFETTE_EXTENSION_CONFIGURATION").Default("Release").String()
-	buildVersion                   = kingpin.Flag("buildVersion", "The build version.").Envar("ESTAFETTE_EXTENSION_BUILD_VERSION").String()
-	project                        = kingpin.Flag("project", "The path to the project for which the tests/build should be run.").Envar("ESTAFETTE_EXTENSION_PROJECT").String()
-	runtimeID                      = kingpin.Flag("runtimeId", "The publish runtime.").Envar("ESTAFETTE_EXTENSION_RUNTIME_ID").Default("linux-x64").String()
-	forceRestore                   = kingpin.Flag("forceRestore", "Execute the restore on every action.").Envar("ESTAFETTE_EXTENSION_FORCE_RESTORE").Default("false").Bool()
-	forceBuild                     = kingpin.Flag("forceBuild", "Execute the build on every action.").Envar("ESTAFETTE_EXTENSION_FORCE_BUILD").Default("false").Bool()
-	outputFolder                   = kingpin.Flag("outputFolder", "The folder into which the publish output is generated.").Envar("ESTAFETTE_EXTENSION_OUTPUT_FOLDER").String()
-	nugetSources                   = kingpin.Flag("nugetSources", "String array of nuget sources to restore from.").Envar("ESTAFETTE_EXTENSION_SOURCES").String()
-	nugetServerURL                 = kingpin.Flag("nugetServerUrl", "The URL of the NuGet server.").Envar("ESTAFETTE_EXTENSION_NUGET_SERVER_URL").String()
-	nugetServerAPIKey              = kingpin.Flag("nugetServerApiKey", "The API key of the NuGet server.").Envar("ESTAFETTE_EXTENSION_NUGET_SERVER_API_KEY").String()
-	nugetServerCredentialsJSONPath = kingpin.Flag("nugetServerCredentials-path", "Path to file with NuGet Server credentials configured at server level, passed in to this trusted extension.").Default("/credentials/nuget_server.json").String()
-	nugetServerName                = kingpin.Flag("nugetServerName", "The name of the preferred NuGet server from the preconfigured credentials.").Envar("ESTAFETTE_EXTENSION_NUGET_SERVER_NAME").String()
-	publishReadyToRun              = kingpin.Flag("publishReadyToRun", "Sets PublishReadyToRun parameter for the publish action when true.").Envar("ESTAFETTE_EXTENSION_PUBLISH_READY_TO_RUN").Default("false").Bool()
-	publishSingleFile              = kingpin.Flag("publishSingleFile", "Sets PublishSingleFile parameter for the publish action when true.").Envar("ESTAFETTE_EXTENSION_PUBLISH_SINGLE_FILE").Default("false").Bool()
-	publishTrimmed                 = kingpin.Flag("publishTrimmed", "Sets PublishTrimmed parameter for the publish action when true.").Envar("ESTAFETTE_EXTENSION_PUBLISH_TRIMMED").Default("false").Bool()
-	sonarQubeServerURL             = kingpin.Flag("sonarQubeServerUrl", "The URL of the SonarQube Server to which we send analysis reports.").Envar("ESTAFETTE_EXTENSION_SONARQUBE_SERVER_URL").String()
-	sonarQubeServerCredentialsJSON = kingpin.Flag("sonarQubeServerCredentials", "SonarQube Server credentials configured at server level, passed in to this trusted extension.").Envar("ESTAFETTE_CREDENTIALS_SONARQUBE_SERVER").String()
-	sonarQubeServerName            = kingpin.Flag("sonarQubeServerName", "The name of the preferred SonarQube server from the preconfigured credentials.").Envar("ESTAFETTE_EXTENSION_SONARQUBE_SERVER_NAME").String()
-	sonarQubeCoverageExclusions    = kingpin.Flag("sonarQubeCoverageExclusions", "The path for the code to be excluded on SonarQube Scan.").Envar("ESTAFETTE_EXTENSION_SONARQUBE_COVERAGE_EXCLUSIONS").String()
+	action                             = kingpin.Flag("action", "Any of the following actions: restore, build, test, unit-test, integration-test, publish, pack, push-nuget").Envar("ESTAFETTE_EXTENSION_ACTION").String()
+	configuration                      = kingpin.Flag("configuration", "The build configuration.").Envar("ESTAFETTE_EXTENSION_CONFIGURATION").Default("Release").String()
+	buildVersion                       = kingpin.Flag("buildVersion", "The build version.").Envar("ESTAFETTE_EXTENSION_BUILD_VERSION").String()
+	project                            = kingpin.Flag("project", "The path to the project for which the tests/build should be run.").Envar("ESTAFETTE_EXTENSION_PROJECT").String()
+	runtimeID                          = kingpin.Flag("runtimeId", "The publish runtime.").Envar("ESTAFETTE_EXTENSION_RUNTIME_ID").Default("linux-x64").String()
+	forceRestore                       = kingpin.Flag("forceRestore", "Execute the restore on every action.").Envar("ESTAFETTE_EXTENSION_FORCE_RESTORE").Default("false").Bool()
+	forceBuild                         = kingpin.Flag("forceBuild", "Execute the build on every action.").Envar("ESTAFETTE_EXTENSION_FORCE_BUILD").Default("false").Bool()
+	outputFolder                       = kingpin.Flag("outputFolder", "The folder into which the publish output is generated.").Envar("ESTAFETTE_EXTENSION_OUTPUT_FOLDER").String()
+	nugetSources                       = kingpin.Flag("nugetSources", "String array of nuget sources to restore from.").Envar("ESTAFETTE_EXTENSION_SOURCES").String()
+	nugetServerURL                     = kingpin.Flag("nugetServerUrl", "The URL of the NuGet server.").Envar("ESTAFETTE_EXTENSION_NUGET_SERVER_URL").String()
+	nugetServerAPIKey                  = kingpin.Flag("nugetServerApiKey", "The API key of the NuGet server.").Envar("ESTAFETTE_EXTENSION_NUGET_SERVER_API_KEY").String()
+	nugetServerCredentialsJSONPath     = kingpin.Flag("nugetServerCredentials-path", "Path to file with NuGet Server credentials configured at server level, passed in to this trusted extension.").Default("/credentials/nuget_server.json").String()
+	nugetServerName                    = kingpin.Flag("nugetServerName", "The name of the preferred NuGet server from the preconfigured credentials.").Envar("ESTAFETTE_EXTENSION_NUGET_SERVER_NAME").String()
+	publishReadyToRun                  = kingpin.Flag("publishReadyToRun", "Sets PublishReadyToRun parameter for the publish action when true.").Envar("ESTAFETTE_EXTENSION_PUBLISH_READY_TO_RUN").Default("false").Bool()
+	publishSingleFile                  = kingpin.Flag("publishSingleFile", "Sets PublishSingleFile parameter for the publish action when true.").Envar("ESTAFETTE_EXTENSION_PUBLISH_SINGLE_FILE").Default("false").Bool()
+	publishTrimmed                     = kingpin.Flag("publishTrimmed", "Sets PublishTrimmed parameter for the publish action when true.").Envar("ESTAFETTE_EXTENSION_PUBLISH_TRIMMED").Default("false").Bool()
+	sonarQubeServerURL                 = kingpin.Flag("sonarQubeServerUrl", "The URL of the SonarQube Server to which we send analysis reports.").Envar("ESTAFETTE_EXTENSION_SONARQUBE_SERVER_URL").String()
+	sonarQubeServerCredentialsJSONPath = kingpin.Flag("sonarQubeServerCredentials-path", "Path to file with SonarQube Server credentials configured at server level, passed in to this trusted extension.").Default("/credentials/sonarqube_server.json").String()
+	sonarQubeServerName                = kingpin.Flag("sonarQubeServerName", "The name of the preferred SonarQube server from the preconfigured credentials.").Envar("ESTAFETTE_EXTENSION_SONARQUBE_SERVER_NAME").String()
+	sonarQubeCoverageExclusions        = kingpin.Flag("sonarQubeCoverageExclusions", "The path for the code to be excluded on SonarQube Scan.").Envar("ESTAFETTE_EXTENSION_SONARQUBE_COVERAGE_EXCLUSIONS").String()
 )
 
 func main() {
@@ -171,10 +171,21 @@ func main() {
 		// 2. If we have the default credentials from the server level, and sonarQubeServerName is explicitly specified, we look for the credential with the specified name.
 		// 3. If we have the default credentials from the server level, and sonarQubeServerName is not specified, we take the first credential. (This is the sensible default if we're using only one SonarQube server.)
 		if *sonarQubeServerURL == "" {
-			if *sonarQubeServerCredentialsJSON != "" {
+
+			if runtime.GOOS == "windows" {
+				*sonarQubeServerCredentialsJSONPath = "C:" + *sonarQubeServerCredentialsJSONPath
+			}
+			if foundation.FileExists(*sonarQubeServerCredentialsJSONPath) {
 				log.Printf("Unmarshalling credentials...")
+
+				log.Info().Msgf("Reading credentials from file at path %v...", *sonarQubeServerCredentialsJSONPath)
+				credentialsFileContent, err := ioutil.ReadFile(*sonarQubeServerCredentialsJSONPath)
+				if err != nil {
+					log.Fatal().Msgf("Failed reading credential file at path %v.", *sonarQubeServerCredentialsJSONPath)
+				}
+
 				var credentials []SonarQubeServerCredentials
-				err := json.Unmarshal([]byte(*sonarQubeServerCredentialsJSON), &credentials)
+				err = json.Unmarshal(credentialsFileContent, &credentials)
 				if err != nil {
 					log.Fatal().Err(err).Msg("Failed unmarshalling credentials")
 				}
