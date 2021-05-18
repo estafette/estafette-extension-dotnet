@@ -307,7 +307,7 @@ func main() {
 		}
 
 		if *publishReadyToRun {
-			args = append(args, "/p:PublishReadyToRun=true")
+			args = append(args, "/p:PublishReadyToRun=true", "/p:PublishReadyToRunShowWarnings=true")
 		}
 		if *publishSingleFile {
 			args = append(args, "/p:PublishSingleFile=true")
