@@ -152,6 +152,30 @@ stages:
         - SDK_VERSION_TAG
         - OPENJDK_PACKAGE
 
+      bake-6.0:
+        image: extensions/docker:dev
+        action: build
+        container: dotnet
+        dockerfile: Dockerfile.6.0
+        repositories:
+        - extensions
+        path: ./publish
+        noCache: true
+        versionTagSuffix: v6.0-sdk
+        env:
+          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/sdk
+          SDK_VERSION_TAG: 6.0-focal
+          OPENJDK_PACKAGE: openjdk-11-jdk
+        args:
+        - DOCKER_REPOSITORY
+        - SDK_VERSION_TAG
+        - OPENJDK_PACKAGE
+        dontExpand:
+        - PATH
+        - DOCKER_REPOSITORY
+        - SDK_VERSION_TAG
+        - OPENJDK_PACKAGE
+
   check-containers:
     parallelStages:
       check-efficiency-3.1:
