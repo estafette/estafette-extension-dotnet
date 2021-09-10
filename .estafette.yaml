@@ -152,6 +152,30 @@ stages:
         - SDK_VERSION_TAG
         - OPENJDK_PACKAGE
 
+      bake-6.0:
+        image: extensions/docker:dev
+        action: build
+        container: dotnet
+        dockerfile: Dockerfile.6.0
+        repositories:
+        - extensions
+        path: ./publish
+        noCache: true
+        versionTagSuffix: v6.0-sdk
+        env:
+          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/sdk
+          SDK_VERSION_TAG: 6.0-focal
+          OPENJDK_PACKAGE: openjdk-11-jdk
+        args:
+        - DOCKER_REPOSITORY
+        - SDK_VERSION_TAG
+        - OPENJDK_PACKAGE
+        dontExpand:
+        - PATH
+        - DOCKER_REPOSITORY
+        - SDK_VERSION_TAG
+        - OPENJDK_PACKAGE
+
   check-containers:
     parallelStages:
       check-efficiency-3.1:
@@ -341,6 +365,16 @@ releases:
             - extensions
             tags:
             - 5.0-dev
+            
+          tag-container-image-6.0:
+            image: extensions/docker:dev
+            action: tag
+            container: dotnet
+            versionTagSuffix: v6.0-sdk
+            repositories:
+            - extensions
+            tags:
+            - 6.0-dev
 
       slack-notify:
         image: extensions/slack-build-status:dev
@@ -414,6 +448,16 @@ releases:
             - extensions
             tags:
             - 5.0-stable
+            
+          tag-container-image-6.0:
+            image: extensions/docker:dev
+            action: tag
+            container: dotnet
+            versionTagSuffix: v6.0-sdk
+            repositories:
+            - extensions
+            tags:
+            - 6.0-stable
 
       slack-notify:
         image: extensions/slack-build-status:dev
