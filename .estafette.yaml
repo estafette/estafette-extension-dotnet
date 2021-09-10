@@ -365,6 +365,16 @@ releases:
             - extensions
             tags:
             - 5.0-dev
+            
+          tag-container-image-6.0:
+            image: extensions/docker:dev
+            action: tag
+            container: dotnet
+            versionTagSuffix: v6.0-sdk
+            repositories:
+            - extensions
+            tags:
+            - 6.0-dev
 
       slack-notify:
         image: extensions/slack-build-status:dev
@@ -438,6 +448,16 @@ releases:
             - extensions
             tags:
             - 5.0-stable
+            
+          tag-container-image-6.0:
+            image: extensions/docker:dev
+            action: tag
+            container: dotnet
+            versionTagSuffix: v6.0-sdk
+            repositories:
+            - extensions
+            tags:
+            - 6.0-stable
 
       slack-notify:
         image: extensions/slack-build-status:dev
