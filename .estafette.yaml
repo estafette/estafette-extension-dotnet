@@ -34,7 +34,8 @@ stages:
         noCache: true
         versionTagSuffix: v2.1-sdk
         env:
-          SDK_VERSION_TAG: 2.1-sdk
+          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/core/runtime
+          SDK_VERSION_TAG: 2.1
         args:
         - SDK_VERSION_TAG
         dontExpand:
@@ -54,7 +55,8 @@ stages:
         noCache: true
         versionTagSuffix: v2.2-sdk
         env:
-          SDK_VERSION_TAG: 2.2-sdk
+          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/core/runtime
+          SDK_VERSION_TAG: 2.2
         args:
         - SDK_VERSION_TAG
         dontExpand:
@@ -74,7 +76,8 @@ stages:
         noCache: true
         versionTagSuffix: v3.0-sdk
         env:
-          SDK_VERSION_TAG: 3.0-sdk
+          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/core/sdk
+          SDK_VERSION_TAG: 3.0
         args:
         - SDK_VERSION_TAG
         dontExpand:

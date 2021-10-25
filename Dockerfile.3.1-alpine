@@ -1,5 +1,5 @@
 ARG SDK_VERSION_TAG
-ARG DOCKER_REPOSITORY=microsoft/dotnet
+ARG DOCKER_REPOSITORY=mcr.microsoft.com/dotnet/core/sdk
 FROM ${DOCKER_REPOSITORY}:${SDK_VERSION_TAG}
 
 LABEL maintainer="estafette.io" \
