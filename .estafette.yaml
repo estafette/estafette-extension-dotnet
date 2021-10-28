@@ -77,7 +77,7 @@ stages:
         versionTagSuffix: v3.0-sdk
         env:
           DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/core/sdk
-          SDK_VERSION_TAG: 3.0-stretch
+          SDK_VERSION_TAG: 3.0
         args:
         - SDK_VERSION_TAG
         dontExpand:
