@@ -235,6 +235,24 @@ stages:
         repositories:
         - extensions
 
+      check-efficiency-6.0:
+        image: extensions/docker:stable
+        action: dive
+        container: dotnet
+        versionTagSuffix: v6.0-sdk
+        repositories:
+        - extensions
+  
+      vulnerability-scan-6.0:
+        image: extensions/docker:stable
+        action: trivy
+        repositories:
+        - eu.gcr.io/travix-com
+        container: dotnet
+        versionTagSuffix: v6.0-sdk
+        repositories:
+        - extensions
+
   push:
     parallelStages:
       push-container-image-2.1:
@@ -288,6 +306,15 @@ stages:
         container: dotnet
         noCache: true
         versionTagSuffix: v5.0-sdk
+        repositories:
+        - extensions
+
+      push-container-image-6.0:
+        image: extensions/docker:dev
+        action: push
+        container: dotnet
+        noCache: true
+        versionTagSuffix: v6.0-sdk
         repositories:
         - extensions
 
