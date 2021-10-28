@@ -34,7 +34,8 @@ stages:
         noCache: true
         versionTagSuffix: v2.1-sdk
         env:
-          SDK_VERSION_TAG: 2.1-sdk
+          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/core/sdk
+          SDK_VERSION_TAG: 2.1
         args:
         - SDK_VERSION_TAG
         dontExpand:
@@ -54,7 +55,8 @@ stages:
         noCache: true
         versionTagSuffix: v2.2-sdk
         env:
-          SDK_VERSION_TAG: 2.2-sdk
+          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/core/sdk
+          SDK_VERSION_TAG: 2.2
         args:
         - SDK_VERSION_TAG
         dontExpand:
@@ -74,7 +76,8 @@ stages:
         noCache: true
         versionTagSuffix: v3.0-sdk
         env:
-          SDK_VERSION_TAG: 3.0-sdk
+          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/core/sdk
+          SDK_VERSION_TAG: 3.0
         args:
         - SDK_VERSION_TAG
         dontExpand:
@@ -94,7 +97,7 @@ stages:
         noCache: true
         versionTagSuffix: v3.1-sdk
         env:
-          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/core/sdk
+          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/sdk
           SDK_VERSION_TAG: 3.1-focal
           OPENJDK_PACKAGE: openjdk-11-jdk
         args:
@@ -118,7 +121,7 @@ stages:
         noCache: true
         versionTagSuffix: v3.1-alpine-sdk
         env:
-          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/core/sdk
+          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/sdk
           SDK_VERSION_TAG: 3.1-alpine
         args:
         - DOCKER_REPOSITORY
@@ -232,6 +235,24 @@ stages:
         repositories:
         - extensions
 
+      check-efficiency-6.0:
+        image: extensions/docker:stable
+        action: dive
+        container: dotnet
+        versionTagSuffix: v6.0-sdk
+        repositories:
+        - extensions
+  
+      vulnerability-scan-6.0:
+        image: extensions/docker:stable
+        action: trivy
+        repositories:
+        - eu.gcr.io/travix-com
+        container: dotnet
+        versionTagSuffix: v6.0-sdk
+        repositories:
+        - extensions
+
   push:
     parallelStages:
       push-container-image-2.1:
@@ -285,6 +306,15 @@ stages:
         container: dotnet
         noCache: true
         versionTagSuffix: v5.0-sdk
+        repositories:
+        - extensions
+
+      push-container-image-6.0:
+        image: extensions/docker:dev
+        action: push
+        container: dotnet
+        noCache: true
+        versionTagSuffix: v6.0-sdk
         repositories:
         - extensions
 

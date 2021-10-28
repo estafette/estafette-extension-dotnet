@@ -1,5 +1,5 @@
 ARG SDK_VERSION_TAG
-ARG DOCKER_REPOSITORY=microsoft/dotnet
+ARG DOCKER_REPOSITORY=mcr.microsoft.com/dotnet/core/sdk
 FROM ${DOCKER_REPOSITORY}:${SDK_VERSION_TAG}
 
 ARG OPENJDK_PACKAGE=openjdk-8-jre
@@ -10,6 +10,12 @@ LABEL maintainer="estafette.io" \
 RUN grep security /etc/apt/sources.list | tee /etc/apt/security.sources.list && \
     apt-get update && \
     apt-get upgrade -y -o Dir::Etc::SourceList=/etc/apt/security.sources.list && \
+    apt-get upgrade -y \
+      libidn11 \
+      libperl5.24 \
+      perl \
+      perl-base \
+      perl-modules-5.24 && \
     apt-get install -yq \
         $OPENJDK_PACKAGE \
     && java -version \
