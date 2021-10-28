@@ -34,7 +34,7 @@ stages:
         noCache: true
         versionTagSuffix: v2.1-sdk
         env:
-          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/core/runtime
+          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/core/sdk
           SDK_VERSION_TAG: 2.1
         args:
         - SDK_VERSION_TAG
@@ -55,7 +55,7 @@ stages:
         noCache: true
         versionTagSuffix: v2.2-sdk
         env:
-          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/core/runtime
+          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/core/sdk
           SDK_VERSION_TAG: 2.2
         args:
         - SDK_VERSION_TAG
@@ -77,7 +77,7 @@ stages:
         versionTagSuffix: v3.0-sdk
         env:
           DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/core/sdk
-          SDK_VERSION_TAG: 3.0
+          SDK_VERSION_TAG: 3.0-stretch
         args:
         - SDK_VERSION_TAG
         dontExpand:
@@ -97,7 +97,7 @@ stages:
         noCache: true
         versionTagSuffix: v3.1-sdk
         env:
-          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/core/sdk
+          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/sdk
           SDK_VERSION_TAG: 3.1-focal
           OPENJDK_PACKAGE: openjdk-11-jdk
         args:
@@ -121,7 +121,7 @@ stages:
         noCache: true
         versionTagSuffix: v3.1-alpine-sdk
         env:
-          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/core/sdk
+          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/sdk
           SDK_VERSION_TAG: 3.1-alpine
         args:
         - DOCKER_REPOSITORY
