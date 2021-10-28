@@ -1,6 +1,6 @@
 ARG SDK_VERSION_TAG
 ARG DOCKER_REPOSITORY=mcr.microsoft.com/dotnet/core/sdk
-FROM ${DOCKER_REPOSITORY}:${SDK_VERSION_TAG}
+FROM ${DOCKER_REPOSITORY}:3.0
 
 ARG OPENJDK_PACKAGE=openjdk-11-jre
 
@@ -10,6 +10,16 @@ LABEL maintainer="estafette.io" \
 RUN grep security /etc/apt/sources.list | tee /etc/apt/security.sources.list && \
     apt-get update && \
     apt-get upgrade -y -o Dir::Etc::SourceList=/etc/apt/security.sources.list && \
+    apt-get upgrade -y \
+      libbsd0 \
+      libgcrypt20 \
+      libgnutls30 \
+      libperl5.28 \
+      libsqlite3-0 \
+      perl \
+      perl-base \
+      perl-modules-5.28 && \
+    apt-get clean && \
     apt-get install -yq \
         $OPENJDK_PACKAGE \
         libc-bin \
