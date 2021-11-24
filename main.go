@@ -217,6 +217,8 @@ func main() {
 
 		// dotnet sonarscanner begin /k:"Travix.Core.ShoppingCart" /d:sonar.host.url=https://sonarqube.travix.com /d:sonar.cs.opencover.reportsPaths="**\coverage.opencover.xml" /d:sonar.coverage.exclusions="**Tests.cs"
 		args := []string{
+			"--roll-forward",
+			"LatestMajor",
 			"sonarscanner",
 			"begin",
 			fmt.Sprintf("/key:%s", solutionName),
@@ -250,6 +252,8 @@ func main() {
 
 		// dotnet sonarscanner end
 		args = []string{
+			"--roll-forward",
+			"LatestMajor",
 			"sonarscanner",
 			"end",
 		}
