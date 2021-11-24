@@ -252,6 +252,8 @@ func main() {
 
 		// dotnet sonarscanner end
 		args = []string{
+			"--roll-forward",
+			"LatestMajor",
 			"sonarscanner",
 			"end",
 		}
