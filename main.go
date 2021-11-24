@@ -215,11 +215,15 @@ func main() {
 			*sonarQubeCoverageExclusions = "**Tests.cs"
 		}
 
+		sonarqubePath, _ := os.UserHomeDir()
+		sonarqubePath += "/.dotnet/tools/dotnet-sonarscanner.exe"
+		log.Info().Msg("Resolved sonarqube path is " + sonarqubePath)
+
 		// dotnet sonarscanner begin /k:"Travix.Core.ShoppingCart" /d:sonar.host.url=https://sonarqube.travix.com /d:sonar.cs.opencover.reportsPaths="**\coverage.opencover.xml" /d:sonar.coverage.exclusions="**Tests.cs"
 		args := []string{
 			"--roll-forward",
 			"LatestMajor",
-			"sonarscanner",
+			sonarqubePath,
 			"begin",
 			fmt.Sprintf("/key:%s", solutionName),
 			fmt.Sprintf("/d:sonar.host.url=%s", *sonarQubeServerURL),
@@ -254,7 +258,7 @@ func main() {
 		args = []string{
 			"--roll-forward",
 			"LatestMajor",
-			"sonarscanner",
+			sonarqubePath,
 			"end",
 		}
 
