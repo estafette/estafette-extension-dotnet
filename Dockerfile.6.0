@@ -13,7 +13,7 @@ RUN grep security /etc/apt/sources.list | tee /etc/apt/security.sources.list && 
     apt-get install -yq \
         $OPENJDK_PACKAGE && \
     java -version && \
-    dotnet tool install --global --version 5.0.4 dotnet-sonarscanner
+    dotnet tool install --global --version 5.3.2 dotnet-sonarscanner
 
 ENV PATH="$PATH:/root/.dotnet/tools" \
     ESTAFETTE_LOG_FORMAT="console"
