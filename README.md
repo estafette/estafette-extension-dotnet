@@ -192,3 +192,4 @@ Or we can explicitly configure the URL and the API Key, that way we're not using
     nugetServerUrl: https://nuget.mycompany.com
     nugetServerApiKey: 3a4cdeca-3d5b-41a2-ac59-ae4b5c5eaece
 ```
+
