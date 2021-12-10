@@ -167,7 +167,7 @@ stages:
         versionTagSuffix: v6.0-sdk
         env:
           DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/sdk
-          SDK_VERSION_TAG: 6.0-focal
+          SDK_VERSION_TAG: 6.0-bullseye-slim
           OPENJDK_PACKAGE: openjdk-11-jdk
         args:
         - DOCKER_REPOSITORY
