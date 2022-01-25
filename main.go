@@ -40,6 +40,7 @@ var (
 	nugetServerAPIKey                  = kingpin.Flag("nugetServerApiKey", "The API key of the NuGet server.").Envar("ESTAFETTE_EXTENSION_NUGET_SERVER_API_KEY").String()
 	nugetServerCredentialsJSONPath     = kingpin.Flag("nugetServerCredentials-path", "Path to file with NuGet Server credentials configured at server level, passed in to this trusted extension.").Default("/credentials/nuget_server.json").String()
 	nugetServerName                    = kingpin.Flag("nugetServerName", "The name of the preferred NuGet server from the preconfigured credentials.").Envar("ESTAFETTE_EXTENSION_NUGET_SERVER_NAME").String()
+	nugetSkipDuplicate                 = kingpin.Flag("nugetSkipDuplicate", "Treat 409 Conflict response as a warning.").Envar("ESTAFETTE_EXTENSION_NUGET_SKIP_DUPLICATE").Default("false").Bool()
 	publishReadyToRun                  = kingpin.Flag("publishReadyToRun", "Sets PublishReadyToRun parameter for the publish action when true.").Envar("ESTAFETTE_EXTENSION_PUBLISH_READY_TO_RUN").Default("false").Bool()
 	publishSingleFile                  = kingpin.Flag("publishSingleFile", "Sets PublishSingleFile parameter for the publish action when true.").Envar("ESTAFETTE_EXTENSION_PUBLISH_SINGLE_FILE").Default("false").Bool()
 	publishTrimmed                     = kingpin.Flag("publishTrimmed", "Sets PublishTrimmed parameter for the publish action when true.").Envar("ESTAFETTE_EXTENSION_PUBLISH_TRIMMED").Default("false").Bool()
@@ -369,6 +370,7 @@ func main() {
 		// action: push-nuget
 		// nugetServerUrl: https://nuget.mycompany.com
 		// nugetServerApikey: 3a4cdeca-3d5b-41a2-ac59-ae4b5c5eaece
+		// nugetSkipDuplicate: true
 
 		log.Printf("Publishing the nuget package(s)...\n")
 
@@ -448,6 +450,10 @@ func main() {
 			*nugetServerURL,
 			"--api-key",
 			*nugetServerAPIKey,
+		}
+
+		if *nugetSkipDuplicate {
+			args2 = append(args2, "--skip-duplicate")
 		}
 
 		for i := 0; i < len(files); i++ {
