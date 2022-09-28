@@ -179,6 +179,30 @@ stages:
         - SDK_VERSION_TAG
         - OPENJDK_PACKAGE
 
+      bake-7.0:
+        image: extensions/docker:dev
+        action: build
+        container: dotnet
+        dockerfile: Dockerfile.7.0
+        repositories:
+        - extensions
+        path: ./publish
+        noCache: true
+        versionTagSuffix: v7.0-sdk
+        env:
+          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/sdk
+          SDK_VERSION_TAG: 7.0-bullseye-slim
+          OPENJDK_PACKAGE: openjdk-11-jdk
+        args:
+        - DOCKER_REPOSITORY
+        - SDK_VERSION_TAG
+        - OPENJDK_PACKAGE
+        dontExpand:
+        - PATH
+        - DOCKER_REPOSITORY
+        - SDK_VERSION_TAG
+        - OPENJDK_PACKAGE
+
   check-containers:
     parallelStages:
       check-efficiency-3.1:
@@ -252,6 +276,24 @@ stages:
         versionTagSuffix: v6.0-sdk
         repositories:
         - extensions
+      
+      check-efficiency-7.0:
+        image: extensions/docker:stable
+        action: dive
+        container: dotnet
+        versionTagSuffix: v7.0-sdk
+        repositories:
+        - extensions
+  
+      vulnerability-scan-7.0:
+        image: extensions/docker:stable
+        action: trivy
+        repositories:
+        - eu.gcr.io/travix-com
+        container: dotnet
+        versionTagSuffix: v7.0-sdk
+        repositories:
+        - extensions
 
   push:
     parallelStages:
@@ -315,6 +357,15 @@ stages:
         container: dotnet
         noCache: true
         versionTagSuffix: v6.0-sdk
+        repositories:
+        - extensions
+
+      push-container-image-7.0:
+        image: extensions/docker:dev
+        action: push
+        container: dotnet
+        noCache: true
+        versionTagSuffix: v7.0-sdk
         repositories:
         - extensions
 
@@ -406,6 +457,16 @@ releases:
             tags:
             - 6.0-dev
 
+          tag-container-image-7.0:
+            image: extensions/docker:dev
+            action: tag
+            container: dotnet
+            versionTagSuffix: v7.0-sdk
+            repositories:
+            - extensions
+            tags:
+            - 7.0-dev
+
       slack-notify:
         image: extensions/slack-build-status:dev
         workspace: estafette
@@ -488,6 +549,16 @@ releases:
             - extensions
             tags:
             - 6.0-stable
+          
+          tag-container-image-7.0:
+            image: extensions/docker:dev
+            action: tag
+            container: dotnet
+            versionTagSuffix: v7.0-sdk
+            repositories:
+            - extensions
+            tags:
+            - 7.0-stable
 
       slack-notify:
         image: extensions/slack-build-status:dev
