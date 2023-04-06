@@ -131,53 +131,53 @@ stages:
       #   - DOCKER_REPOSITORY
       #   - SDK_VERSION_TAG
 
-      bake-5.0:
-        image: extensions/docker:dev
-        action: build
-        container: dotnet
-        dockerfile: Dockerfile.5.0
-        repositories:
-        - extensions
-        path: ./publish
-        noCache: true
-        versionTagSuffix: v5.0-sdk
-        env:
-          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/sdk
-          SDK_VERSION_TAG: 5.0-focal
-          OPENJDK_PACKAGE: openjdk-11-jdk
-        args:
-        - DOCKER_REPOSITORY
-        - SDK_VERSION_TAG
-        - OPENJDK_PACKAGE
-        dontExpand:
-        - PATH
-        - DOCKER_REPOSITORY
-        - SDK_VERSION_TAG
-        - OPENJDK_PACKAGE
+      # bake-5.0:
+      #   image: extensions/docker:dev
+      #   action: build
+      #   container: dotnet
+      #   dockerfile: Dockerfile.5.0
+      #   repositories:
+      #   - extensions
+      #   path: ./publish
+      #   noCache: true
+      #   versionTagSuffix: v5.0-sdk
+      #   env:
+      #     DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/sdk
+      #     SDK_VERSION_TAG: 5.0-focal
+      #     OPENJDK_PACKAGE: openjdk-11-jdk
+      #   args:
+      #   - DOCKER_REPOSITORY
+      #   - SDK_VERSION_TAG
+      #   - OPENJDK_PACKAGE
+      #   dontExpand:
+      #   - PATH
+      #   - DOCKER_REPOSITORY
+      #   - SDK_VERSION_TAG
+      #   - OPENJDK_PACKAGE
 
-      bake-6.0:
-        image: extensions/docker:dev
-        action: build
-        container: dotnet
-        dockerfile: Dockerfile.6.0
-        repositories:
-        - extensions
-        path: ./publish
-        noCache: true
-        versionTagSuffix: v6.0-sdk
-        env:
-          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/sdk
-          SDK_VERSION_TAG: 6.0-bullseye-slim
-          OPENJDK_PACKAGE: openjdk-11-jdk
-        args:
-        - DOCKER_REPOSITORY
-        - SDK_VERSION_TAG
-        - OPENJDK_PACKAGE
-        dontExpand:
-        - PATH
-        - DOCKER_REPOSITORY
-        - SDK_VERSION_TAG
-        - OPENJDK_PACKAGE
+      # bake-6.0:
+      #   image: extensions/docker:dev
+      #   action: build
+      #   container: dotnet
+      #   dockerfile: Dockerfile.6.0
+      #   repositories:
+      #   - extensions
+      #   path: ./publish
+      #   noCache: true
+      #   versionTagSuffix: v6.0-sdk
+      #   env:
+      #     DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/sdk
+      #     SDK_VERSION_TAG: 6.0-bullseye-slim
+      #     OPENJDK_PACKAGE: openjdk-11-jdk
+      #   args:
+      #   - DOCKER_REPOSITORY
+      #   - SDK_VERSION_TAG
+      #   - OPENJDK_PACKAGE
+      #   dontExpand:
+      #   - PATH
+      #   - DOCKER_REPOSITORY
+      #   - SDK_VERSION_TAG
+      #   - OPENJDK_PACKAGE
 
       bake-7.0:
         image: extensions/docker:dev
@@ -241,42 +241,42 @@ stages:
       #   repositories:
       #   - extensions
 
-      check-efficiency-5.0:
-        image: extensions/docker:stable
-        action: dive
-        container: dotnet
-        versionTagSuffix: v5.0-sdk
-        repositories:
-        - extensions
+      # check-efficiency-5.0:
+      #   image: extensions/docker:stable
+      #   action: dive
+      #   container: dotnet
+      #   versionTagSuffix: v5.0-sdk
+      #   repositories:
+      #   - extensions
 
-      vulnerability-scan-5.0:
-        image: extensions/docker:stable
-        action: trivy
-        repositories:
-        - eu.gcr.io/travix-com
-        container: dotnet
-        versionTagSuffix: v5.0-sdk
-        repositories:
-        - extensions
+      # vulnerability-scan-5.0:
+      #   image: extensions/docker:stable
+      #   action: trivy
+      #   repositories:
+      #   - eu.gcr.io/travix-com
+      #   container: dotnet
+      #   versionTagSuffix: v5.0-sdk
+      #   repositories:
+      #   - extensions
 
-      check-efficiency-6.0:
-        image: extensions/docker:stable
-        action: dive
-        container: dotnet
-        versionTagSuffix: v6.0-sdk
-        repositories:
-        - extensions
-  
-      vulnerability-scan-6.0:
-        image: extensions/docker:stable
-        action: trivy
-        repositories:
-        - eu.gcr.io/travix-com
-        container: dotnet
-        versionTagSuffix: v6.0-sdk
-        repositories:
-        - extensions
-      
+      # check-efficiency-6.0:
+      #   image: extensions/docker:stable
+      #   action: dive
+      #   container: dotnet
+      #   versionTagSuffix: v6.0-sdk
+      #   repositories:
+      #   - extensions
+
+      # vulnerability-scan-6.0:
+      #   image: extensions/docker:stable
+      #   action: trivy
+      #   repositories:
+      #   - eu.gcr.io/travix-com
+      #   container: dotnet
+      #   versionTagSuffix: v6.0-sdk
+      #   repositories:
+      #   - extensions
+
       check-efficiency-7.0:
         image: extensions/docker:stable
         action: dive
@@ -284,7 +284,7 @@ stages:
         versionTagSuffix: v7.0-sdk
         repositories:
         - extensions
-  
+
       vulnerability-scan-7.0:
         image: extensions/docker:stable
         action: trivy
@@ -342,23 +342,23 @@ stages:
       #   repositories:
       #   - extensions
 
-      push-container-image-5.0:
-        image: extensions/docker:dev
-        action: push
-        container: dotnet
-        noCache: true
-        versionTagSuffix: v5.0-sdk
-        repositories:
-        - extensions
+      # push-container-image-5.0:
+      #   image: extensions/docker:dev
+      #   action: push
+      #   container: dotnet
+      #   noCache: true
+      #   versionTagSuffix: v5.0-sdk
+      #   repositories:
+      #   - extensions
 
-      push-container-image-6.0:
-        image: extensions/docker:dev
-        action: push
-        container: dotnet
-        noCache: true
-        versionTagSuffix: v6.0-sdk
-        repositories:
-        - extensions
+      # push-container-image-6.0:
+      #   image: extensions/docker:dev
+      #   action: push
+      #   container: dotnet
+      #   noCache: true
+      #   versionTagSuffix: v6.0-sdk
+      #   repositories:
+      #   - extensions
 
       push-container-image-7.0:
         image: extensions/docker:dev
@@ -437,25 +437,25 @@ releases:
           #   tags:
           #   - 3.1-alpine-dev
 
-          tag-container-image-5.0:
-            image: extensions/docker:dev
-            action: tag
-            container: dotnet
-            versionTagSuffix: v5.0-sdk
-            repositories:
-            - extensions
-            tags:
-            - 5.0-dev
-            
-          tag-container-image-6.0:
-            image: extensions/docker:dev
-            action: tag
-            container: dotnet
-            versionTagSuffix: v6.0-sdk
-            repositories:
-            - extensions
-            tags:
-            - 6.0-dev
+          # tag-container-image-5.0:
+          #   image: extensions/docker:dev
+          #   action: tag
+          #   container: dotnet
+          #   versionTagSuffix: v5.0-sdk
+          #   repositories:
+          #   - extensions
+          #   tags:
+          #   - 5.0-dev
+
+          # tag-container-image-6.0:
+          #   image: extensions/docker:dev
+          #   action: tag
+          #   container: dotnet
+          #   versionTagSuffix: v6.0-sdk
+          #   repositories:
+          #   - extensions
+          #   tags:
+          #   - 6.0-dev
 
           tag-container-image-7.0:
             image: extensions/docker:dev
@@ -530,26 +530,26 @@ releases:
           #   tags:
           #   - 3.1-alpine-stable
 
-          tag-container-image-5.0:
-            image: extensions/docker:dev
-            action: tag
-            container: dotnet
-            versionTagSuffix: v5.0-sdk
-            repositories:
-            - extensions
-            tags:
-            - 5.0-stable
-            
-          tag-container-image-6.0:
-            image: extensions/docker:dev
-            action: tag
-            container: dotnet
-            versionTagSuffix: v6.0-sdk
-            repositories:
-            - extensions
-            tags:
-            - 6.0-stable
-          
+          # tag-container-image-5.0:
+          #   image: extensions/docker:dev
+          #   action: tag
+          #   container: dotnet
+          #   versionTagSuffix: v5.0-sdk
+          #   repositories:
+          #   - extensions
+          #   tags:
+          #   - 5.0-stable
+
+          # tag-container-image-6.0:
+          #   image: extensions/docker:dev
+          #   action: tag
+          #   container: dotnet
+          #   versionTagSuffix: v6.0-sdk
+          #   repositories:
+          #   - extensions
+          #   tags:
+          #   - 6.0-stable
+
           tag-container-image-7.0:
             image: extensions/docker:dev
             action: tag
