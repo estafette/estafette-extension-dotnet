@@ -23,113 +23,113 @@ stages:
 
   bake:
     parallelStages:
-      bake-2.1:
-        image: extensions/docker:dev
-        action: build
-        container: dotnet
-        dockerfile: Dockerfile.2.1
-        repositories:
-        - extensions
-        path: ./publish
-        noCache: true
-        versionTagSuffix: v2.1-sdk
-        env:
-          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/core/sdk
-          SDK_VERSION_TAG: 2.1
-        args:
-        - SDK_VERSION_TAG
-        dontExpand:
-        - PATH
-        - DOCKER_REPOSITORY
-        - SDK_VERSION_TAG
-        - OPENJDK_PACKAGE
+      # bake-2.1:
+      #   image: extensions/docker:dev
+      #   action: build
+      #   container: dotnet
+      #   dockerfile: Dockerfile.2.1
+      #   repositories:
+      #   - extensions
+      #   path: ./publish
+      #   noCache: true
+      #   versionTagSuffix: v2.1-sdk
+      #   env:
+      #     DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/core/sdk
+      #     SDK_VERSION_TAG: 2.1
+      #   args:
+      #   - SDK_VERSION_TAG
+      #   dontExpand:
+      #   - PATH
+      #   - DOCKER_REPOSITORY
+      #   - SDK_VERSION_TAG
+      #   - OPENJDK_PACKAGE
 
-      bake-2.2:
-        image: extensions/docker:dev
-        action: build
-        container: dotnet
-        dockerfile: Dockerfile.2.2
-        repositories:
-        - extensions
-        path: ./publish
-        noCache: true
-        versionTagSuffix: v2.2-sdk
-        env:
-          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/core/sdk
-          SDK_VERSION_TAG: 2.2
-        args:
-        - SDK_VERSION_TAG
-        dontExpand:
-        - PATH
-        - DOCKER_REPOSITORY
-        - SDK_VERSION_TAG
-        - OPENJDK_PACKAGE
+      # bake-2.2:
+      #   image: extensions/docker:dev
+      #   action: build
+      #   container: dotnet
+      #   dockerfile: Dockerfile.2.2
+      #   repositories:
+      #   - extensions
+      #   path: ./publish
+      #   noCache: true
+      #   versionTagSuffix: v2.2-sdk
+      #   env:
+      #     DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/core/sdk
+      #     SDK_VERSION_TAG: 2.2
+      #   args:
+      #   - SDK_VERSION_TAG
+      #   dontExpand:
+      #   - PATH
+      #   - DOCKER_REPOSITORY
+      #   - SDK_VERSION_TAG
+      #   - OPENJDK_PACKAGE
 
-      bake-3.0:
-        image: extensions/docker:dev
-        action: build
-        container: dotnet
-        dockerfile: Dockerfile.3.0
-        repositories:
-        - extensions
-        path: ./publish
-        noCache: true
-        versionTagSuffix: v3.0-sdk
-        env:
-          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/core/sdk
-          SDK_VERSION_TAG: 3.0
-        args:
-        - SDK_VERSION_TAG
-        dontExpand:
-        - PATH
-        - DOCKER_REPOSITORY
-        - SDK_VERSION_TAG
-        - OPENJDK_PACKAGE
+      # bake-3.0:
+      #   image: extensions/docker:dev
+      #   action: build
+      #   container: dotnet
+      #   dockerfile: Dockerfile.3.0
+      #   repositories:
+      #   - extensions
+      #   path: ./publish
+      #   noCache: true
+      #   versionTagSuffix: v3.0-sdk
+      #   env:
+      #     DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/core/sdk
+      #     SDK_VERSION_TAG: 3.0
+      #   args:
+      #   - SDK_VERSION_TAG
+      #   dontExpand:
+      #   - PATH
+      #   - DOCKER_REPOSITORY
+      #   - SDK_VERSION_TAG
+      #   - OPENJDK_PACKAGE
 
-      bake-3.1:
-        image: extensions/docker:dev
-        action: build
-        container: dotnet
-        dockerfile: Dockerfile.3.1
-        repositories:
-        - extensions
-        path: ./publish
-        noCache: true
-        versionTagSuffix: v3.1-sdk
-        env:
-          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/sdk
-          SDK_VERSION_TAG: 3.1-focal
-          OPENJDK_PACKAGE: openjdk-11-jdk
-        args:
-        - DOCKER_REPOSITORY
-        - SDK_VERSION_TAG
-        - OPENJDK_PACKAGE
-        dontExpand:
-        - PATH
-        - DOCKER_REPOSITORY
-        - SDK_VERSION_TAG
-        - OPENJDK_PACKAGE
+      # bake-3.1:
+      #   image: extensions/docker:dev
+      #   action: build
+      #   container: dotnet
+      #   dockerfile: Dockerfile.3.1
+      #   repositories:
+      #   - extensions
+      #   path: ./publish
+      #   noCache: true
+      #   versionTagSuffix: v3.1-sdk
+      #   env:
+      #     DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/sdk
+      #     SDK_VERSION_TAG: 3.1-focal
+      #     OPENJDK_PACKAGE: openjdk-11-jdk
+      #   args:
+      #   - DOCKER_REPOSITORY
+      #   - SDK_VERSION_TAG
+      #   - OPENJDK_PACKAGE
+      #   dontExpand:
+      #   - PATH
+      #   - DOCKER_REPOSITORY
+      #   - SDK_VERSION_TAG
+      #   - OPENJDK_PACKAGE
 
-      bake-3.1-alpine:
-        image: extensions/docker:dev
-        action: build
-        container: dotnet
-        dockerfile: Dockerfile.3.1-alpine
-        repositories:
-        - extensions
-        path: ./publish
-        noCache: true
-        versionTagSuffix: v3.1-alpine-sdk
-        env:
-          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/sdk
-          SDK_VERSION_TAG: 3.1-alpine
-        args:
-        - DOCKER_REPOSITORY
-        - SDK_VERSION_TAG
-        dontExpand:
-        - PATH
-        - DOCKER_REPOSITORY
-        - SDK_VERSION_TAG
+      # bake-3.1-alpine:
+      #   image: extensions/docker:dev
+      #   action: build
+      #   container: dotnet
+      #   dockerfile: Dockerfile.3.1-alpine
+      #   repositories:
+      #   - extensions
+      #   path: ./publish
+      #   noCache: true
+      #   versionTagSuffix: v3.1-alpine-sdk
+      #   env:
+      #     DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/sdk
+      #     SDK_VERSION_TAG: 3.1-alpine
+      #   args:
+      #   - DOCKER_REPOSITORY
+      #   - SDK_VERSION_TAG
+      #   dontExpand:
+      #   - PATH
+      #   - DOCKER_REPOSITORY
+      #   - SDK_VERSION_TAG
 
       bake-5.0:
         image: extensions/docker:dev
@@ -205,41 +205,41 @@ stages:
 
   check-containers:
     parallelStages:
-      check-efficiency-3.1:
-        image: extensions/docker:stable
-        action: dive
-        container: dotnet
-        versionTagSuffix: v3.1-sdk
-        repositories:
-        - extensions
+      # check-efficiency-3.1:
+      #   image: extensions/docker:stable
+      #   action: dive
+      #   container: dotnet
+      #   versionTagSuffix: v3.1-sdk
+      #   repositories:
+      #   - extensions
 
-      vulnerability-scan-3.1:
-        image: extensions/docker:stable
-        action: trivy
-        repositories:
-        - eu.gcr.io/travix-com
-        container: dotnet
-        versionTagSuffix: v3.1-sdk
-        repositories:
-        - extensions
+      # vulnerability-scan-3.1:
+      #   image: extensions/docker:stable
+      #   action: trivy
+      #   repositories:
+      #   - eu.gcr.io/travix-com
+      #   container: dotnet
+      #   versionTagSuffix: v3.1-sdk
+      #   repositories:
+      #   - extensions
 
-      check-efficiency-3.1-alpine:
-        image: extensions/docker:stable
-        action: dive
-        container: dotnet
-        versionTagSuffix: v3.1-alpine-sdk
-        repositories:
-        - extensions
+      # check-efficiency-3.1-alpine:
+      #   image: extensions/docker:stable
+      #   action: dive
+      #   container: dotnet
+      #   versionTagSuffix: v3.1-alpine-sdk
+      #   repositories:
+      #   - extensions
 
-      vulnerability-scan-3.1-alpine:
-        image: extensions/docker:stable
-        action: trivy
-        repositories:
-        - eu.gcr.io/travix-com
-        container: dotnet
-        versionTagSuffix: v3.1-alpine-sdk
-        repositories:
-        - extensions
+      # vulnerability-scan-3.1-alpine:
+      #   image: extensions/docker:stable
+      #   action: trivy
+      #   repositories:
+      #   - eu.gcr.io/travix-com
+      #   container: dotnet
+      #   versionTagSuffix: v3.1-alpine-sdk
+      #   repositories:
+      #   - extensions
 
       check-efficiency-5.0:
         image: extensions/docker:stable
@@ -297,50 +297,50 @@ stages:
 
   push:
     parallelStages:
-      push-container-image-2.1:
-        image: extensions/docker:dev
-        action: push
-        container: dotnet
-        noCache: true
-        versionTagSuffix: v2.1-sdk
-        repositories:
-        - extensions
+      # push-container-image-2.1:
+      #   image: extensions/docker:dev
+      #   action: push
+      #   container: dotnet
+      #   noCache: true
+      #   versionTagSuffix: v2.1-sdk
+      #   repositories:
+      #   - extensions
 
-      push-container-image-2.2:
-        image: extensions/docker:dev
-        action: push
-        container: dotnet
-        noCache: true
-        versionTagSuffix: v2.2-sdk
-        repositories:
-        - extensions
+      # push-container-image-2.2:
+      #   image: extensions/docker:dev
+      #   action: push
+      #   container: dotnet
+      #   noCache: true
+      #   versionTagSuffix: v2.2-sdk
+      #   repositories:
+      #   - extensions
 
-      push-container-image-3.0:
-        image: extensions/docker:dev
-        action: push
-        container: dotnet
-        noCache: true
-        versionTagSuffix: v3.0-sdk
-        repositories:
-        - extensions
+      # push-container-image-3.0:
+      #   image: extensions/docker:dev
+      #   action: push
+      #   container: dotnet
+      #   noCache: true
+      #   versionTagSuffix: v3.0-sdk
+      #   repositories:
+      #   - extensions
 
-      push-container-image-3.1:
-        image: extensions/docker:dev
-        action: push
-        container: dotnet
-        noCache: true
-        versionTagSuffix: v3.1-sdk
-        repositories:
-        - extensions
+      # push-container-image-3.1:
+      #   image: extensions/docker:dev
+      #   action: push
+      #   container: dotnet
+      #   noCache: true
+      #   versionTagSuffix: v3.1-sdk
+      #   repositories:
+      #   - extensions
 
-      push-container-image-3.1-alpine:
-        image: extensions/docker:dev
-        action: push
-        container: dotnet
-        noCache: true
-        versionTagSuffix: v3.1-alpine-sdk
-        repositories:
-        - extensions
+      # push-container-image-3.1-alpine:
+      #   image: extensions/docker:dev
+      #   action: push
+      #   container: dotnet
+      #   noCache: true
+      #   versionTagSuffix: v3.1-alpine-sdk
+      #   repositories:
+      #   - extensions
 
       push-container-image-5.0:
         image: extensions/docker:dev
@@ -387,55 +387,55 @@ releases:
     stages:
       tag:
         parallelStages:
-          tag-container-image-2.1:
-            image: extensions/docker:dev
-            action: tag
-            container: dotnet
-            versionTagSuffix: v2.1-sdk
-            repositories:
-            - extensions
-            tags:
-            - 2.1-dev
+          # tag-container-image-2.1:
+          #   image: extensions/docker:dev
+          #   action: tag
+          #   container: dotnet
+          #   versionTagSuffix: v2.1-sdk
+          #   repositories:
+          #   - extensions
+          #   tags:
+          #   - 2.1-dev
 
-          tag-container-image-2.2:
-            image: extensions/docker:dev
-            action: tag
-            container: dotnet
-            versionTagSuffix: v2.2-sdk
-            repositories:
-            - extensions
-            tags:
-            - 2.2-dev
+          # tag-container-image-2.2:
+          #   image: extensions/docker:dev
+          #   action: tag
+          #   container: dotnet
+          #   versionTagSuffix: v2.2-sdk
+          #   repositories:
+          #   - extensions
+          #   tags:
+          #   - 2.2-dev
 
-          tag-container-image-3.0:
-            image: extensions/docker:dev
-            action: tag
-            container: dotnet
-            versionTagSuffix: v3.0-sdk
-            repositories:
-            - extensions
-            tags:
-            - 3.0-dev
+          # tag-container-image-3.0:
+          #   image: extensions/docker:dev
+          #   action: tag
+          #   container: dotnet
+          #   versionTagSuffix: v3.0-sdk
+          #   repositories:
+          #   - extensions
+          #   tags:
+          #   - 3.0-dev
 
-          tag-container-image-3.1:
-            image: extensions/docker:dev
-            action: tag
-            container: dotnet
-            versionTagSuffix: v3.1-sdk
-            repositories:
-            - extensions
-            tags:
-            - 3.1-dev
+          # tag-container-image-3.1:
+          #   image: extensions/docker:dev
+          #   action: tag
+          #   container: dotnet
+          #   versionTagSuffix: v3.1-sdk
+          #   repositories:
+          #   - extensions
+          #   tags:
+          #   - 3.1-dev
 
-          tag-container-image-3.1-alpine:
-            image: extensions/docker:dev
-            action: tag
-            container: dotnet
-            versionTagSuffix: v3.1-alpine-sdk
-            repositories:
-            - extensions
-            tags:
-            - 3.1-alpine-dev
+          # tag-container-image-3.1-alpine:
+          #   image: extensions/docker:dev
+          #   action: tag
+          #   container: dotnet
+          #   versionTagSuffix: v3.1-alpine-sdk
+          #   repositories:
+          #   - extensions
+          #   tags:
+          #   - 3.1-alpine-dev
 
           tag-container-image-5.0:
             image: extensions/docker:dev
@@ -480,55 +480,55 @@ releases:
     stages:
       tag:
         parallelStages:
-          tag-container-image-2.1:
-            image: extensions/docker:dev
-            action: tag
-            container: dotnet
-            versionTagSuffix: v2.1-sdk
-            repositories:
-            - extensions
-            tags:
-            - 2.1-stable
+          # tag-container-image-2.1:
+          #   image: extensions/docker:dev
+          #   action: tag
+          #   container: dotnet
+          #   versionTagSuffix: v2.1-sdk
+          #   repositories:
+          #   - extensions
+          #   tags:
+          #   - 2.1-stable
 
-          tag-container-image-2.2:
-            image: extensions/docker:dev
-            action: tag
-            container: dotnet
-            versionTagSuffix: v2.2-sdk
-            repositories:
-            - extensions
-            tags:
-            - 2.2-stable
+          # tag-container-image-2.2:
+          #   image: extensions/docker:dev
+          #   action: tag
+          #   container: dotnet
+          #   versionTagSuffix: v2.2-sdk
+          #   repositories:
+          #   - extensions
+          #   tags:
+          #   - 2.2-stable
 
-          tag-container-image-3.0:
-            image: extensions/docker:dev
-            action: tag
-            container: dotnet
-            versionTagSuffix: v3.0-sdk
-            repositories:
-            - extensions
-            tags:
-            - 3.0-stable
+          # tag-container-image-3.0:
+          #   image: extensions/docker:dev
+          #   action: tag
+          #   container: dotnet
+          #   versionTagSuffix: v3.0-sdk
+          #   repositories:
+          #   - extensions
+          #   tags:
+          #   - 3.0-stable
 
-          tag-container-image-3.1:
-            image: extensions/docker:dev
-            action: tag
-            container: dotnet
-            versionTagSuffix: v3.1-sdk
-            repositories:
-            - extensions
-            tags:
-            - 3.1-stable
+          # tag-container-image-3.1:
+          #   image: extensions/docker:dev
+          #   action: tag
+          #   container: dotnet
+          #   versionTagSuffix: v3.1-sdk
+          #   repositories:
+          #   - extensions
+          #   tags:
+          #   - 3.1-stable
 
-          tag-container-image-3.1-alpine:
-            image: extensions/docker:dev
-            action: tag
-            container: dotnet
-            versionTagSuffix: v3.1-alpine-sdk
-            repositories:
-            - extensions
-            tags:
-            - 3.1-alpine-stable
+          # tag-container-image-3.1-alpine:
+          #   image: extensions/docker:dev
+          #   action: tag
+          #   container: dotnet
+          #   versionTagSuffix: v3.1-alpine-sdk
+          #   repositories:
+          #   - extensions
+          #   tags:
+          #   - 3.1-alpine-stable
 
           tag-container-image-5.0:
             image: extensions/docker:dev
