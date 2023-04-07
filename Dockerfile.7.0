@@ -13,7 +13,9 @@ RUN grep security /etc/apt/sources.list | tee /etc/apt/security.sources.list && 
     apt-get install -yq \
         $OPENJDK_PACKAGE && \
     java -version && \
-    dotnet tool install --global --version 5.4.0 dotnet-sonarscanner
+    dotnet tool install --global --version 5.4.0 dotnet-sonarscanner && \
+    sed -i 's/System\.Drawing\.Common\/4\.7\.0/System\.Drawing\.Common\/4\.7\.2/g' /usr/share/dotnet/sdk/7.0.202/Sdks/Microsoft.NET.ILLink.Tasks/tools/net7.0/ILLink.Tasks.deps.json && \
+    sed -i 's/"System\.Drawing\.Common": "4\.7\.0"/"System\.Drawing\.Common": "4\.7\.2"/g' /usr/share/dotnet/sdk/7.0.202/Sdks/Microsoft.NET.ILLink.Tasks/tools/net7.0/ILLink.Tasks.deps.json
 
 ENV PATH="$PATH:/root/.dotnet/tools" \
     ESTAFETTE_LOG_FORMAT="console"
