@@ -33,6 +33,7 @@ stages:
         path: ./publish
         noCache: true
         versionTagSuffix: v2.1-sdk
+        severity: critical
         env:
           DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/core/sdk
           SDK_VERSION_TAG: 2.1
@@ -54,6 +55,7 @@ stages:
         path: ./publish
         noCache: true
         versionTagSuffix: v2.2-sdk
+        severity: critical
         env:
           DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/core/sdk
           SDK_VERSION_TAG: 2.2
@@ -75,6 +77,7 @@ stages:
         path: ./publish
         noCache: true
         versionTagSuffix: v3.0-sdk
+        severity: critical
         env:
           DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/core/sdk
           SDK_VERSION_TAG: 3.0
@@ -96,6 +99,7 @@ stages:
         path: ./publish
         noCache: true
         versionTagSuffix: v3.1-sdk
+        severity: critical
         env:
           DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/sdk
           SDK_VERSION_TAG: 3.1-focal
@@ -120,6 +124,7 @@ stages:
         path: ./publish
         noCache: true
         versionTagSuffix: v3.1-alpine-sdk
+        severity: critical
         env:
           DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/sdk
           SDK_VERSION_TAG: 3.1-alpine
@@ -141,6 +146,7 @@ stages:
         path: ./publish
         noCache: true
         versionTagSuffix: v5.0-sdk
+        severity: critical
         env:
           DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/sdk
           SDK_VERSION_TAG: 5.0-focal
@@ -165,6 +171,7 @@ stages:
         path: ./publish
         noCache: true
         versionTagSuffix: v6.0-sdk
+        severity: critical
         env:
           DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/sdk
           SDK_VERSION_TAG: 6.0-bullseye-slim
@@ -189,6 +196,7 @@ stages:
         path: ./publish
         noCache: true
         versionTagSuffix: v7.0-sdk
+        severity: critical
         env:
           DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/sdk
           SDK_VERSION_TAG: 7.0-bullseye-slim
@@ -216,6 +224,7 @@ stages:
       vulnerability-scan-3.1:
         image: extensions/docker:stable
         action: trivy
+        severity: critical
         repositories:
         - eu.gcr.io/travix-com
         container: dotnet
@@ -234,6 +243,7 @@ stages:
       vulnerability-scan-3.1-alpine:
         image: extensions/docker:stable
         action: trivy
+        severity: critical
         repositories:
         - eu.gcr.io/travix-com
         container: dotnet
@@ -252,6 +262,7 @@ stages:
       vulnerability-scan-5.0:
         image: extensions/docker:stable
         action: trivy
+        severity: critical
         repositories:
         - eu.gcr.io/travix-com
         container: dotnet
@@ -266,17 +277,18 @@ stages:
         versionTagSuffix: v6.0-sdk
         repositories:
         - extensions
-  
+
       vulnerability-scan-6.0:
         image: extensions/docker:stable
         action: trivy
+        severity: critical
         repositories:
         - eu.gcr.io/travix-com
         container: dotnet
         versionTagSuffix: v6.0-sdk
         repositories:
         - extensions
-      
+
       check-efficiency-7.0:
         image: extensions/docker:stable
         action: dive
@@ -284,10 +296,11 @@ stages:
         versionTagSuffix: v7.0-sdk
         repositories:
         - extensions
-  
+
       vulnerability-scan-7.0:
         image: extensions/docker:stable
         action: trivy
+        severity: critical
         repositories:
         - eu.gcr.io/travix-com
         container: dotnet
@@ -446,7 +459,7 @@ releases:
             - extensions
             tags:
             - 5.0-dev
-            
+
           tag-container-image-6.0:
             image: extensions/docker:dev
             action: tag
@@ -539,7 +552,7 @@ releases:
             - extensions
             tags:
             - 5.0-stable
-            
+
           tag-container-image-6.0:
             image: extensions/docker:dev
             action: tag
@@ -549,7 +562,7 @@ releases:
             - extensions
             tags:
             - 6.0-stable
-          
+
           tag-container-image-7.0:
             image: extensions/docker:dev
             action: tag
