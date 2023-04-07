@@ -278,7 +278,7 @@ stages:
       #   - extensions
 
       check-efficiency-7.0:
-        image: extensions/docker:stable
+        image: extensions/docker:dev
         action: dive
         container: dotnet
         versionTagSuffix: v7.0-sdk
@@ -286,7 +286,7 @@ stages:
         - extensions
 
       vulnerability-scan-7.0:
-        image: extensions/docker:stable
+        image: extensions/docker:dev
         action: trivy
         repositories:
         - eu.gcr.io/travix-com
