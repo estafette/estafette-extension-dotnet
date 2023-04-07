@@ -189,6 +189,7 @@ stages:
         path: ./publish
         noCache: true
         versionTagSuffix: v7.0-sdk
+        severity: critical
         env:
           DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/sdk
           SDK_VERSION_TAG: 7.0-bullseye-slim
@@ -282,6 +283,7 @@ stages:
         action: dive
         container: dotnet
         versionTagSuffix: v7.0-sdk
+        severity: critical
         repositories:
         - extensions
 
@@ -292,6 +294,7 @@ stages:
         - eu.gcr.io/travix-com
         container: dotnet
         versionTagSuffix: v7.0-sdk
+        severity: critical
         repositories:
         - extensions
 
@@ -366,6 +369,7 @@ stages:
         container: dotnet
         noCache: true
         versionTagSuffix: v7.0-sdk
+        severity: critical
         repositories:
         - extensions
 
@@ -462,6 +466,7 @@ releases:
             action: tag
             container: dotnet
             versionTagSuffix: v7.0-sdk
+            severity: critical
             repositories:
             - extensions
             tags:
@@ -555,6 +560,7 @@ releases:
             action: tag
             container: dotnet
             versionTagSuffix: v7.0-sdk
+            severity: critical
             repositories:
             - extensions
             tags:
