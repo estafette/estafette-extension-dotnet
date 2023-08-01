@@ -87,6 +87,45 @@ func main() {
 		// image: extensions/dotnet:stable
 		// action: restore
 
+		// Determine the NuGet server credentials for restoring
+		// 1. If there is a NuGet.config file in the repository, we use that.
+		// 2. If nugetServerURL and nugetServerAPIKey are explicitly specified, we generate a NuGet.config file using those.
+		// 2. If we have the default credentials from the server level, and nugetServerName is explicitly specified, we look for the credential with the specified name.
+		// 3. If we have the default credentials from the server level, and nugetServerName is not specified, we take the first credential. (This is the sensible default if we're using only one NuGet server.)
+		if !foundation.FileExists("nuget.config") {
+			if *nugetServerURL == "" || *nugetServerAPIKey == "" {
+				// use mounted credential file if present instead of relying on an envvar
+				if runtime.GOOS == "windows" {
+					*nugetServerCredentialsJSONPath = "C:" + *nugetServerCredentialsJSONPath
+				}
+
+				if foundation.FileExists(*nugetServerCredentialsJSONPath) {
+					*nugetServerURL, *nugetServerAPIKey = getNugetServerCredentialsFromFile(*nugetServerCredentialsJSONPath, *nugetServerName)
+				}
+			}
+
+			if *nugetServerURL != "" && *nugetServerAPIKey != "" {
+				// nugetConfigXml = template.New("nugetConfigXml").Parse(`<?xml version="1.0" encoding="utf-8"?>
+				nugetConfigXml := fmt.Sprintf(`<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <packageSources>
+    <add key="nuget.org" value="https://api.nuget.org/v3/index.json" protocolVersion="3" />
+    <add key="github" value="%s" />
+  </packageSources>
+  <packageSourceCredentials>
+    <github>
+      <add key="Username" value="travix-tooling-bot" />
+      <add key="ClearTextPassword" value="%s" />
+    </github>
+  </packageSourceCredentials>
+</configuration>`,
+					*nugetServerURL,
+					*nugetServerAPIKey)
+
+				os.WriteFile("NuGet.config", []byte(nugetConfigXml), 0666)
+			}
+		}
+
 		// build docker image
 		log.Printf("Restoring packages...\n")
 		args := []string{
@@ -378,47 +417,14 @@ func main() {
 		// 1. If nugetServerURL and nugetServerAPIKey are explicitly specified, we use those.
 		// 2. If we have the default credentials from the server level, and nugetServerName is explicitly specified, we look for the credential with the specified name.
 		// 3. If we have the default credentials from the server level, and nugetServerName is not specified, we take the first credential. (This is the sensible default if we're using only one NuGet server.)
-
 		if *nugetServerURL == "" || *nugetServerAPIKey == "" {
-
 			// use mounted credential file if present instead of relying on an envvar
 			if runtime.GOOS == "windows" {
 				*nugetServerCredentialsJSONPath = "C:" + *nugetServerCredentialsJSONPath
 			}
+
 			if foundation.FileExists(*nugetServerCredentialsJSONPath) {
-				log.Printf("Unmarshalling credentials...")
-
-				log.Info().Msgf("Reading credentials from file at path %v...", *nugetServerCredentialsJSONPath)
-				credentialsFileContent, err := ioutil.ReadFile(*nugetServerCredentialsJSONPath)
-				if err != nil {
-					log.Fatal().Msgf("Failed reading credential file at path %v.", *nugetServerCredentialsJSONPath)
-				}
-
-				var credentials []NugetServerCredentials
-				err = json.Unmarshal(credentialsFileContent, &credentials)
-				if err != nil {
-					log.Fatal().Err(err).Msg("Failed unmarshalling credentials")
-				}
-
-				if len(credentials) == 0 {
-					log.Fatal().Msg("There are no credentials specified.")
-				}
-
-				if *nugetServerName != "" {
-					credential := GetNugetServerCredentialsByName(credentials, *nugetServerName)
-					if credential == nil {
-						log.Fatal().Msgf("The NuGet Server credential with the name %v does not exist.", *nugetServerName)
-					}
-
-					*nugetServerURL = credential.AdditionalProperties.APIURL
-					*nugetServerAPIKey = credential.AdditionalProperties.APIKey
-				} else {
-					// Just pick the first
-					credential := credentials[0]
-
-					*nugetServerURL = credential.AdditionalProperties.APIURL
-					*nugetServerAPIKey = credential.AdditionalProperties.APIKey
-				}
+				*nugetServerURL, *nugetServerAPIKey = getNugetServerCredentialsFromFile(*nugetServerCredentialsJSONPath, *nugetServerName)
 			} else {
 				log.Fatal().Msg("The NuGet server URL and API key have to be specified to push a package.")
 			}
@@ -468,6 +474,44 @@ func main() {
 	default:
 		log.Fatal().Msg("Set `action: <action>` on this step to restore, build, test, unit-test, integration-test or publish.")
 	}
+}
+
+func getNugetServerCredentialsFromFile(credentialsFilePath string, serverName string) (serverURL string, APIKey string) {
+	log.Printf("Unmarshalling credentials...")
+
+	log.Info().Msgf("Reading credentials from file at path %v...", credentialsFilePath)
+	credentialsFileContent, err := ioutil.ReadFile(credentialsFilePath)
+	if err != nil {
+		log.Fatal().Msgf("Failed reading credential file at path %v.", credentialsFilePath)
+	}
+
+	var credentials []NugetServerCredentials
+	err = json.Unmarshal(credentialsFileContent, &credentials)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed unmarshalling credentials")
+	}
+
+	if len(credentials) == 0 {
+		log.Fatal().Msg("There are no credentials specified.")
+	}
+
+	if serverName != "" {
+		credential := GetNugetServerCredentialsByName(credentials, serverName)
+		if credential == nil {
+			log.Fatal().Msgf("The NuGet Server credential with the name %v does not exist.", serverName)
+		}
+
+		serverURL = credential.AdditionalProperties.APIURL
+		APIKey = credential.AdditionalProperties.APIKey
+	} else {
+		// Just pick the first
+		credential := credentials[0]
+
+		serverURL = credential.AdditionalProperties.APIURL
+		APIKey = credential.AdditionalProperties.APIKey
+	}
+
+	return
 }
 
 // Returns the name of the .NET Core solution in this repository, based on the name of the solution file. If it cannot find a solution file, it returns an empty string.
