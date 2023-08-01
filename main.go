@@ -129,7 +129,7 @@ func main() {
 				// 				ioutil.WriteFile("NuGet.config", []byte(nugetConfigXml), 0666)
 
 				//dotnet nuget add source --username USERNAME --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/NAMESPACE/index.json"
-				foundation.RunCommandWithArgs(ctx, "dotnet", []string{"nuget", "add", "source", "--username", "travix-tooling-bot", "--password", *nugetServerAPIKey, "--store-password-in-clear-text", "--name", "travix", *nugetServerAPIKey})
+				foundation.RunCommandWithArgs(ctx, "dotnet", []string{"nuget", "add", "source", "--username", "travix-tooling-bot", "--password", *nugetServerAPIKey, "--store-password-in-clear-text", "--name", "travix", *nugetServerURL})
 			} else {
 				log.Printf("No Nuget.config in the repository, and no custom credentials found.\n")
 			}
