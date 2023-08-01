@@ -107,28 +107,8 @@ func main() {
 			}
 
 			if *nugetServerURL != "" && *nugetServerAPIKey != "" {
-				// log.Printf("Creating NuGet.config file\n")
 				log.Printf("Adding the NuGet source.\n")
 
-				// 				nugetConfigXml := fmt.Sprintf(`<?xml version="1.0" encoding="utf-8"?>
-				// <configuration>
-				//   <packageSources>
-				//     <add key="nuget.org" value="https://api.nuget.org/v3/index.json" protocolVersion="3" />
-				//     <add key="travix" value="%s" />
-				//   </packageSources>
-				//   <packageSourceCredentials>
-				//     <travix>
-				//       <add key="Username" value="travix-tooling-bot" />
-				//       <add key="ClearTextPassword" value="%s" />
-				//     </travix>
-				//   </packageSourceCredentials>
-				// </configuration>`,
-				// 					*nugetServerURL,
-				// 					*nugetServerAPIKey)
-
-				// 				ioutil.WriteFile("NuGet.config", []byte(nugetConfigXml), 0666)
-
-				//dotnet nuget add source --username USERNAME --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/NAMESPACE/index.json"
 				foundation.RunCommandWithArgs(ctx, "dotnet", []string{"nuget", "add", "source", "--username", "travix-tooling-bot", "--password", *nugetServerAPIKey, "--store-password-in-clear-text", "--name", "travix", *nugetServerURL})
 			} else {
 				log.Printf("No Nuget.config in the repository, and no custom credentials found.\n")
