@@ -92,7 +92,9 @@ func main() {
 		// 2. If nugetServerURL and nugetServerAPIKey are explicitly specified, we generate a NuGet.config file using those.
 		// 2. If we have the default credentials from the server level, and nugetServerName is explicitly specified, we look for the credential with the specified name.
 		// 3. If we have the default credentials from the server level, and nugetServerName is not specified, we take the first credential. (This is the sensible default if we're using only one NuGet server.)
-		if !foundation.FileExists("nuget.config") {
+		if foundation.FileExists("nuget.config") {
+			log.Printf("Nuget.config was found in the repository, using that for the restore.\n")
+		} else {
 			if *nugetServerURL == "" || *nugetServerAPIKey == "" {
 				// use mounted credential file if present instead of relying on an envvar
 				if runtime.GOOS == "windows" {
@@ -105,25 +107,27 @@ func main() {
 			}
 
 			if *nugetServerURL != "" && *nugetServerAPIKey != "" {
+				log.Printf("Creating NuGet.config file\n")
+
 				nugetConfigXml := fmt.Sprintf(`<?xml version="1.0" encoding="utf-8"?>
 <configuration>
   <packageSources>
     <add key="nuget.org" value="https://api.nuget.org/v3/index.json" protocolVersion="3" />
-    <add key="github" value="%s" />
+    <add key="travix" value="%s" />
   </packageSources>
   <packageSourceCredentials>
-    <github>
+    <travix>
       <add key="Username" value="travix-tooling-bot" />
       <add key="ClearTextPassword" value="%s" />
-    </github>
+    </travix>
   </packageSourceCredentials>
 </configuration>`,
 					*nugetServerURL,
 					*nugetServerAPIKey)
 
-				log.Printf("Writing NuGet.config file: %s\n", nugetConfigXml)
-
 				ioutil.WriteFile("NuGet.config", []byte(nugetConfigXml), 0666)
+			} else {
+				log.Printf("No Nuget.config in the repository, and no custom credentials found.\n")
 			}
 		}
 
