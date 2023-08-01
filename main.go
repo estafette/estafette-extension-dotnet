@@ -105,7 +105,6 @@ func main() {
 			}
 
 			if *nugetServerURL != "" && *nugetServerAPIKey != "" {
-				// nugetConfigXml = template.New("nugetConfigXml").Parse(`<?xml version="1.0" encoding="utf-8"?>
 				nugetConfigXml := fmt.Sprintf(`<?xml version="1.0" encoding="utf-8"?>
 <configuration>
   <packageSources>
@@ -121,6 +120,8 @@ func main() {
 </configuration>`,
 					*nugetServerURL,
 					*nugetServerAPIKey)
+
+				log.Printf("Writing NuGet.config file: %s\n", nugetConfigXml)
 
 				ioutil.WriteFile("NuGet.config", []byte(nugetConfigXml), 0666)
 			}
