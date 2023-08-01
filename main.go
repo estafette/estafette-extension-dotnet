@@ -122,7 +122,7 @@ func main() {
 					*nugetServerURL,
 					*nugetServerAPIKey)
 
-				os.WriteFile("NuGet.config", []byte(nugetConfigXml), 0666)
+				ioutil.WriteFile("NuGet.config", []byte(nugetConfigXml), 0666)
 			}
 		}
 
