@@ -39,7 +39,7 @@ var (
 	nugetServerURL                     = kingpin.Flag("nugetServerUrl", "The URL of the NuGet server.").Envar("ESTAFETTE_EXTENSION_NUGET_SERVER_URL").String()
 	nugetServerAPIKey                  = kingpin.Flag("nugetServerApiKey", "The API key of the NuGet server.").Envar("ESTAFETTE_EXTENSION_NUGET_SERVER_API_KEY").String()
 	nugetServerCredentialsJSONPath     = kingpin.Flag("nugetServerCredentials-path", "Path to file with NuGet Server credentials configured at server level, passed in to this trusted extension.").Default("/credentials/nuget_server.json").String()
-	nugetServerName                    = kingpin.Flag("nugetServerName", "The name of the preferred NuGet server from the preconfigured credentials.").Envar("ESTAFETTE_EXTENSION_NUGET_SERVER_NAME").String()
+	nugetServerName                    = kingpin.Flag("nugetServerName", "The name of the preferred NuGet server from the preconfigured credentials.").Envar("ESTAFETTE_EXTENSION_NUGET_SERVER_NAME").Default("github-nuget").String()
 	nugetSkipDuplicate                 = kingpin.Flag("nugetSkipDuplicate", "Treat 409 Conflict response as a warning.").Envar("ESTAFETTE_EXTENSION_NUGET_SKIP_DUPLICATE").Default("false").Bool()
 	publishReadyToRun                  = kingpin.Flag("publishReadyToRun", "Sets PublishReadyToRun parameter for the publish action when true.").Envar("ESTAFETTE_EXTENSION_PUBLISH_READY_TO_RUN").Default("false").Bool()
 	publishSingleFile                  = kingpin.Flag("publishSingleFile", "Sets PublishSingleFile parameter for the publish action when true.").Envar("ESTAFETTE_EXTENSION_PUBLISH_SINGLE_FILE").Default("false").Bool()
@@ -93,26 +93,28 @@ func main() {
 		// 2. If we have the default credentials from the server level, and nugetServerName is explicitly specified, we look for the credential with the specified name.
 		// 3. If we have the default credentials from the server level, and nugetServerName is not specified, we take the first credential. (This is the sensible default if we're using only one NuGet server.)
 		if foundation.FileExists("nuget.config") {
-			log.Printf("Nuget.config was found in the repository, using that for the restore.\n")
+			log.Printf("WARNING: NuGet.config was found in the repository, deleting it.\n")
+			log.Printf("The NuGet.config should be deleted from the repository, to make sure that only the common default sources are used.\n")
+			os.Remove("nuget.config")
+		}
+
+		if *nugetServerURL == "" || *nugetServerAPIKey == "" {
+			// use mounted credential file if present instead of relying on an envvar
+			if runtime.GOOS == "windows" {
+				*nugetServerCredentialsJSONPath = "C:" + *nugetServerCredentialsJSONPath
+			}
+
+			if foundation.FileExists(*nugetServerCredentialsJSONPath) {
+				*nugetServerURL, *nugetServerAPIKey = getNugetServerCredentialsFromFile(*nugetServerCredentialsJSONPath, *nugetServerName)
+			}
+		}
+
+		if *nugetServerURL != "" && *nugetServerAPIKey != "" {
+			log.Printf("Adding the NuGet source.\n")
+
+			foundation.RunCommandWithArgs(ctx, "dotnet", []string{"nuget", "add", "source", "--username", "travix-tooling-bot", "--password", *nugetServerAPIKey, "--store-password-in-clear-text", "--name", "travix", *nugetServerURL})
 		} else {
-			if *nugetServerURL == "" || *nugetServerAPIKey == "" {
-				// use mounted credential file if present instead of relying on an envvar
-				if runtime.GOOS == "windows" {
-					*nugetServerCredentialsJSONPath = "C:" + *nugetServerCredentialsJSONPath
-				}
-
-				if foundation.FileExists(*nugetServerCredentialsJSONPath) {
-					*nugetServerURL, *nugetServerAPIKey = getNugetServerCredentialsFromFile(*nugetServerCredentialsJSONPath, *nugetServerName)
-				}
-			}
-
-			if *nugetServerURL != "" && *nugetServerAPIKey != "" {
-				log.Printf("Adding the NuGet source.\n")
-
-				foundation.RunCommandWithArgs(ctx, "dotnet", []string{"nuget", "add", "source", "--username", "travix-tooling-bot", "--password", *nugetServerAPIKey, "--store-password-in-clear-text", "--name", "travix", *nugetServerURL})
-			} else {
-				log.Printf("No Nuget.config in the repository, and no custom credentials found.\n")
-			}
+			log.Printf("No custom NuGet credentials were found.\n")
 		}
 
 		// build docker image
@@ -402,6 +404,12 @@ func main() {
 
 		log.Printf("Publishing the nuget package(s)...\n")
 
+		type nugetCredentials struct {
+			url string
+			key string
+		}
+
+		var nugetPushCredentials []nugetCredentials
 		// Determine the NuGet server credentials
 		// 1. If nugetServerURL and nugetServerAPIKey are explicitly specified, we use those.
 		// 2. If we have the default credentials from the server level, and nugetServerName is explicitly specified, we look for the credential with the specified name.
@@ -413,10 +421,15 @@ func main() {
 			}
 
 			if foundation.FileExists(*nugetServerCredentialsJSONPath) {
-				*nugetServerURL, *nugetServerAPIKey = getNugetServerCredentialsFromFile(*nugetServerCredentialsJSONPath, *nugetServerName)
+				url, key := getNugetServerCredentialsFromFile(*nugetServerCredentialsJSONPath, "github-nuget")
+				nugetPushCredentials = append(nugetPushCredentials, nugetCredentials{url: url, key: key})
+				url, key = getNugetServerCredentialsFromFile(*nugetServerCredentialsJSONPath, "myget")
+				nugetPushCredentials = append(nugetPushCredentials, nugetCredentials{url: url, key: key})
 			} else {
 				log.Fatal().Msg("The NuGet server URL and API key have to be specified to push a package.")
 			}
+		} else {
+			nugetPushCredentials = append(nugetPushCredentials, nugetCredentials{url: *nugetServerURL, key: *nugetServerAPIKey})
 		}
 
 		srcPath := filepath.Join(workingDir, "src")
@@ -440,24 +453,22 @@ func main() {
 			"push",
 		}
 
-		args2 := []string{
-			"--source",
-			*nugetServerURL,
-			"--api-key",
-			*nugetServerAPIKey,
-		}
-
 		if *nugetSkipDuplicate {
-			args2 = append(args2, "--skip-duplicate")
+			args1 = append(args1, "--skip-duplicate")
 		}
 
 		for i := 0; i < len(files); i++ {
 			argsForPackage := []string{}
 			argsForPackage = append(argsForPackage, args1...)
 			argsForPackage = append(argsForPackage, files[i])
-			argsForPackage = append(argsForPackage, args2...)
 
-			foundation.RunCommandWithArgs(ctx, "dotnet", argsForPackage)
+			for _, cred := range nugetPushCredentials {
+				argsForServer := []string{}
+				argsForServer = append(argsForServer, argsForPackage...)
+				argsForServer = append(argsForServer, "--source", cred.url, "--api-key", cred.key)
+
+				foundation.RunCommandWithArgs(ctx, "dotnet", argsForServer)
+			}
 		}
 
 	default:
