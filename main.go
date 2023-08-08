@@ -87,32 +87,6 @@ func main() {
 		// image: extensions/dotnet:stable
 		// action: restore
 
-		if foundation.FileExists("nuget.config") {
-			log.Printf("WARNING: NuGet.config was found in the repository, deleting it.\n")
-			log.Printf("The NuGet.config should be deleted from the repository, to make sure that only the common default sources are used.\n")
-			os.Remove("nuget.config")
-		}
-
-		// If the NuGet server URL and credentials are explicitly specified, we use those. Otherwise we retrieve them from the Estafette credentials.
-		if *nugetServerURL == "" || *nugetServerAPIKey == "" {
-			// use mounted credential file if present instead of relying on an envvar
-			if runtime.GOOS == "windows" {
-				*nugetServerCredentialsJSONPath = "C:" + *nugetServerCredentialsJSONPath
-			}
-
-			if foundation.FileExists(*nugetServerCredentialsJSONPath) {
-				*nugetServerURL, *nugetServerAPIKey = getNugetServerCredentialsFromFile(*nugetServerCredentialsJSONPath, *nugetServerName)
-			}
-		}
-
-		if *nugetServerURL != "" && *nugetServerAPIKey != "" {
-			log.Printf("Adding the NuGet source.\n")
-
-			foundation.RunCommandWithArgs(ctx, "dotnet", []string{"nuget", "add", "source", "--username", "travix-tooling-bot", "--password", *nugetServerAPIKey, "--store-password-in-clear-text", "--name", "travix", *nugetServerURL})
-		} else {
-			log.Printf("No custom NuGet credentials were found.\n")
-		}
-
 		// build docker image
 		log.Printf("Restoring packages...\n")
 		args := []string{
