@@ -23,50 +23,6 @@ stages:
 
   bake:
     parallelStages:
-      bake-2.1:
-        image: extensions/docker:dev
-        action: build
-        container: dotnet
-        dockerfile: Dockerfile.2.1
-        repositories:
-        - extensions
-        path: ./publish
-        noCache: true
-        versionTagSuffix: v2.1-sdk
-        severity: critical
-        env:
-          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/core/sdk
-          SDK_VERSION_TAG: 2.1
-        args:
-        - SDK_VERSION_TAG
-        dontExpand:
-        - PATH
-        - DOCKER_REPOSITORY
-        - SDK_VERSION_TAG
-        - OPENJDK_PACKAGE
-
-      bake-2.2:
-        image: extensions/docker:dev
-        action: build
-        container: dotnet
-        dockerfile: Dockerfile.2.2
-        repositories:
-        - extensions
-        path: ./publish
-        noCache: true
-        versionTagSuffix: v2.2-sdk
-        severity: critical
-        env:
-          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/core/sdk
-          SDK_VERSION_TAG: 2.2
-        args:
-        - SDK_VERSION_TAG
-        dontExpand:
-        - PATH
-        - DOCKER_REPOSITORY
-        - SDK_VERSION_TAG
-        - OPENJDK_PACKAGE
-
       bake-3.0:
         image: extensions/docker:dev
         action: build
@@ -310,24 +266,6 @@ stages:
 
   push:
     parallelStages:
-      push-container-image-2.1:
-        image: extensions/docker:dev
-        action: push
-        container: dotnet
-        noCache: true
-        versionTagSuffix: v2.1-sdk
-        repositories:
-        - extensions
-
-      push-container-image-2.2:
-        image: extensions/docker:dev
-        action: push
-        container: dotnet
-        noCache: true
-        versionTagSuffix: v2.2-sdk
-        repositories:
-        - extensions
-
       push-container-image-3.0:
         image: extensions/docker:dev
         action: push
@@ -400,26 +338,6 @@ releases:
     stages:
       tag:
         parallelStages:
-          tag-container-image-2.1:
-            image: extensions/docker:dev
-            action: tag
-            container: dotnet
-            versionTagSuffix: v2.1-sdk
-            repositories:
-            - extensions
-            tags:
-            - 2.1-dev
-
-          tag-container-image-2.2:
-            image: extensions/docker:dev
-            action: tag
-            container: dotnet
-            versionTagSuffix: v2.2-sdk
-            repositories:
-            - extensions
-            tags:
-            - 2.2-dev
-
           tag-container-image-3.0:
             image: extensions/docker:dev
             action: tag
@@ -493,26 +411,6 @@ releases:
     stages:
       tag:
         parallelStages:
-          tag-container-image-2.1:
-            image: extensions/docker:dev
-            action: tag
-            container: dotnet
-            versionTagSuffix: v2.1-sdk
-            repositories:
-            - extensions
-            tags:
-            - 2.1-stable
-
-          tag-container-image-2.2:
-            image: extensions/docker:dev
-            action: tag
-            container: dotnet
-            versionTagSuffix: v2.2-sdk
-            repositories:
-            - extensions
-            tags:
-            - 2.2-stable
-
           tag-container-image-3.0:
             image: extensions/docker:dev
             action: tag
