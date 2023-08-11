@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -56,7 +55,7 @@ func main() {
 	kingpin.Parse()
 
 	// init log format from envvar ESTAFETTE_LOG_FORMAT
-	foundation.InitLoggingFromEnv(appgroup, app, version, branch, revision, buildDate)
+	foundation.InitLoggingFromEnv(foundation.NewApplicationInfo(appgroup, app, version, branch, revision, buildDate))
 
 	// create context to cancel commands on sigterm
 	ctx := foundation.InitCancellationContext(context.Background())
@@ -92,13 +91,19 @@ func main() {
 		// 2. If nugetServerURL and nugetServerAPIKey are explicitly specified, we generate a NuGet.config file using those.
 		// 2. If we have the default credentials from the server level, and nugetServerName is explicitly specified, we look for the credential with the specified name.
 		// 3. If we have the default credentials from the server level, and nugetServerName is not specified, we take the first credential. (This is the sensible default if we're using only one NuGet server.)
-		if foundation.FileExists("nuget.config") {
+
+		configFileName := "nuget.config"
+		actualFileName := findActualNugetFileName(configFileName)
+		if foundation.FileExists(actualFileName) {
 			log.Printf("WARNING: NuGet.config was found in the repository, deleting it.\n")
 			log.Printf("The NuGet.config should be deleted from the repository, to make sure that only the common default sources are used.\n")
-			os.Remove("nuget.config")
+			if err := os.Remove(actualFileName); err != nil {
+				log.Fatal().Err(err).Msgf("Failed to remove file %s", actualFileName)
+			}
 		}
 
 		if *nugetServerURL == "" || *nugetServerAPIKey == "" {
+			//nolint:errcheck
 			// use mounted credential file if present instead of relying on an envvar
 			if runtime.GOOS == "windows" {
 				*nugetServerCredentialsJSONPath = "C:" + *nugetServerCredentialsJSONPath
@@ -111,8 +116,9 @@ func main() {
 
 		if *nugetServerURL != "" && *nugetServerAPIKey != "" {
 			log.Printf("Adding the NuGet source.\n")
-
-			foundation.RunCommandWithArgs(ctx, "dotnet", []string{"nuget", "add", "source", "--username", "travix-tooling-bot", "--password", *nugetServerAPIKey, "--store-password-in-clear-text", "--name", "travix", *nugetServerURL})
+			// log command with masked API key
+			log.Printf("> dotnet nuget add source --username travix-tooling-bot --password %v --store-password-in-clear-text --name travix %v\n", "********", *nugetServerURL)
+			foundation.RunCommandWithArgsWithoutLog(ctx, "dotnet", []string{"nuget", "add", "source", "--username", "travix-tooling-bot", "--password", *nugetServerAPIKey, "--store-password-in-clear-text", "--name", "travix", *nugetServerURL})
 		} else {
 			log.Printf("No custom NuGet credentials were found.\n")
 		}
@@ -202,7 +208,7 @@ func main() {
 		// 2. If we have the default credentials from the server level, and sonarQubeServerName is explicitly specified, we look for the credential with the specified name.
 		// 3. If we have the default credentials from the server level, and sonarQubeServerName is not specified, we take the first credential. (This is the sensible default if we're using only one SonarQube server.)
 		if *sonarQubeServerURL == "" {
-
+			//nolint:errcheck
 			if runtime.GOOS == "windows" {
 				*sonarQubeServerCredentialsJSONPath = "C:" + *sonarQubeServerCredentialsJSONPath
 			}
@@ -210,7 +216,7 @@ func main() {
 				log.Printf("Unmarshalling credentials...")
 
 				log.Info().Msgf("Reading credentials from file at path %v...", *sonarQubeServerCredentialsJSONPath)
-				credentialsFileContent, err := ioutil.ReadFile(*sonarQubeServerCredentialsJSONPath)
+				credentialsFileContent, err := os.ReadFile(*sonarQubeServerCredentialsJSONPath)
 				if err != nil {
 					log.Fatal().Msgf("Failed reading credential file at path %v.", *sonarQubeServerCredentialsJSONPath)
 				}
@@ -317,7 +323,7 @@ func main() {
 		}
 
 		if *outputFolder == "" {
-			// A default sensible choice is to put the publish output directly under the working folder in a folder called "publish", so that its relative path doesn't depend on the project name.
+			// A default sensible choice is to put the publishing output directly under the working folder in a folder called "publish", so that its relative path doesn't depend on the project name.
 			// This makes it easier to use in a generic way in followup steps of the build.
 			*outputFolder = filepath.Join(workingDir, "publish")
 		}
@@ -412,9 +418,10 @@ func main() {
 		var nugetPushCredentials []nugetCredentials
 		// Determine the NuGet server credentials
 		// If nugetServerURL and nugetServerAPIKey are explicitly specified, we use those.
-		// Otherwise we automatically push to both GitHub and MyGet. This is temporary, until we finish the transition to GitHub packages.
+		// Otherwise, we automatically push to both GitHub and MyGet. This is temporary, until we finish the transition to GitHub packages.
 		if *nugetServerURL == "" || *nugetServerAPIKey == "" {
 			// use mounted credential file if present instead of relying on an envvar
+			//nolint:errorcheck
 			if runtime.GOOS == "windows" {
 				*nugetServerCredentialsJSONPath = "C:" + *nugetServerCredentialsJSONPath
 			}
@@ -434,7 +441,7 @@ func main() {
 		srcPath := filepath.Join(workingDir, "src")
 
 		var files []string
-		filepath.Walk(srcPath, func(path string, f os.FileInfo, _ error) error {
+		err := filepath.Walk(srcPath, func(path string, f os.FileInfo, _ error) error {
 			if !f.IsDir() {
 				if filepath.Ext(path) == ".nupkg" {
 					files = append(files, path)
@@ -442,6 +449,9 @@ func main() {
 			}
 			return nil
 		})
+		if err != nil {
+			log.Fatal().Err(err).Msg("An error occurred while searching for .nupkg files.")
+		}
 
 		if len(files) == 0 {
 			log.Fatal().Msg("No .nupkg files were found.")
@@ -457,12 +467,12 @@ func main() {
 		}
 
 		for i := 0; i < len(files); i++ {
-			argsForPackage := []string{}
+			var argsForPackage []string
 			argsForPackage = append(argsForPackage, args1...)
 			argsForPackage = append(argsForPackage, files[i])
 
 			for _, cred := range nugetPushCredentials {
-				argsForServer := []string{}
+				var argsForServer []string
 				argsForServer = append(argsForServer, argsForPackage...)
 				argsForServer = append(argsForServer, "--source", cred.url, "--api-key", cred.key)
 
@@ -479,7 +489,7 @@ func getNugetServerCredentialsFromFile(credentialsFilePath string, serverName st
 	log.Printf("Unmarshalling credentials...")
 
 	log.Info().Msgf("Reading credentials from file at path %v...", credentialsFilePath)
-	credentialsFileContent, err := ioutil.ReadFile(credentialsFilePath)
+	credentialsFileContent, err := os.ReadFile(credentialsFilePath)
 	if err != nil {
 		log.Fatal().Msgf("Failed reading credential file at path %v.", credentialsFilePath)
 	}
@@ -515,7 +525,7 @@ func getNugetServerCredentialsFromFile(credentialsFilePath string, serverName st
 
 // Returns the name of the .NET Core solution in this repository, based on the name of the solution file. If it cannot find a solution file, it returns an empty string.
 func getSolutionName() (string, error) {
-	files, err := ioutil.ReadDir(".")
+	files, err := os.ReadDir(".")
 
 	if err == nil {
 		for _, f := range files {
@@ -558,7 +568,7 @@ func runTests(ctx context.Context, projectSuffix string, extraArgs ...string) {
 
 	args = append(args, extraArgs...)
 
-	files, err := ioutil.ReadDir("./test")
+	files, err := os.ReadDir("./test")
 
 	if err == nil {
 		for _, f := range files {
@@ -576,4 +586,16 @@ func runTests(ctx context.Context, projectSuffix string, extraArgs ...string) {
 	} else if !os.IsNotExist(err) { // If we got an error just because the "test" folder doesn't exist, that's fine, we can ignore. We only fail with an error if it was something else.
 		log.Fatal().Err(err).Msg("Failed to read subdirectories under ./test.")
 	}
+}
+
+func findActualNugetFileName(fileName string) string {
+	files, err := os.ReadDir(".")
+	if err == nil {
+		for _, f := range files {
+			if strings.EqualFold(f.Name(), fileName) {
+				return f.Name()
+			}
+		}
+	}
+	return ""
 }
