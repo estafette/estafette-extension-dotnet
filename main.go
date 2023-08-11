@@ -103,6 +103,7 @@ func main() {
 		}
 
 		if *nugetServerURL == "" || *nugetServerAPIKey == "" {
+			//nolint:errcheck
 			// use mounted credential file if present instead of relying on an envvar
 			if runtime.GOOS == "windows" {
 				*nugetServerCredentialsJSONPath = "C:" + *nugetServerCredentialsJSONPath
@@ -116,7 +117,7 @@ func main() {
 		if *nugetServerURL != "" && *nugetServerAPIKey != "" {
 			log.Printf("Adding the NuGet source.\n")
 			// log command with masked API key
-			log.Printf("> dotnet nuget add source --username travix-tooling-bot --password %s --store-password-in-clear-text --name travix %s\n", "********", *nugetServerURL)
+			log.Printf("> dotnet nuget add source --username travix-tooling-bot --password %v --store-password-in-clear-text --name travix %v\n", "********", *nugetServerURL)
 			foundation.RunCommandWithArgsWithoutLog(ctx, "dotnet", []string{"nuget", "add", "source", "--username", "travix-tooling-bot", "--password", *nugetServerAPIKey, "--store-password-in-clear-text", "--name", "travix", *nugetServerURL})
 		} else {
 			log.Printf("No custom NuGet credentials were found.\n")
@@ -207,7 +208,7 @@ func main() {
 		// 2. If we have the default credentials from the server level, and sonarQubeServerName is explicitly specified, we look for the credential with the specified name.
 		// 3. If we have the default credentials from the server level, and sonarQubeServerName is not specified, we take the first credential. (This is the sensible default if we're using only one SonarQube server.)
 		if *sonarQubeServerURL == "" {
-
+			//nolint:errcheck
 			if runtime.GOOS == "windows" {
 				*sonarQubeServerCredentialsJSONPath = "C:" + *sonarQubeServerCredentialsJSONPath
 			}
@@ -322,7 +323,7 @@ func main() {
 		}
 
 		if *outputFolder == "" {
-			// A default sensible choice is to put the publish output directly under the working folder in a folder called "publish", so that its relative path doesn't depend on the project name.
+			// A default sensible choice is to put the publishing output directly under the working folder in a folder called "publish", so that its relative path doesn't depend on the project name.
 			// This makes it easier to use in a generic way in followup steps of the build.
 			*outputFolder = filepath.Join(workingDir, "publish")
 		}
@@ -417,9 +418,10 @@ func main() {
 		var nugetPushCredentials []nugetCredentials
 		// Determine the NuGet server credentials
 		// If nugetServerURL and nugetServerAPIKey are explicitly specified, we use those.
-		// Otherwise we automatically push to both GitHub and MyGet. This is temporary, until we finish the transition to GitHub packages.
+		// Otherwise, we automatically push to both GitHub and MyGet. This is temporary, until we finish the transition to GitHub packages.
 		if *nugetServerURL == "" || *nugetServerAPIKey == "" {
 			// use mounted credential file if present instead of relying on an envvar
+			//nolint:errorcheck
 			if runtime.GOOS == "windows" {
 				*nugetServerCredentialsJSONPath = "C:" + *nugetServerCredentialsJSONPath
 			}
@@ -439,7 +441,7 @@ func main() {
 		srcPath := filepath.Join(workingDir, "src")
 
 		var files []string
-		filepath.Walk(srcPath, func(path string, f os.FileInfo, _ error) error {
+		err := filepath.Walk(srcPath, func(path string, f os.FileInfo, _ error) error {
 			if !f.IsDir() {
 				if filepath.Ext(path) == ".nupkg" {
 					files = append(files, path)
@@ -447,6 +449,9 @@ func main() {
 			}
 			return nil
 		})
+		if err != nil {
+			log.Fatal().Err(err).Msg("An error occurred while searching for .nupkg files.")
+		}
 
 		if len(files) == 0 {
 			log.Fatal().Msg("No .nupkg files were found.")
@@ -585,7 +590,6 @@ func runTests(ctx context.Context, projectSuffix string, extraArgs ...string) {
 
 func findActualNugetFileName(fileName string) string {
 	files, err := os.ReadDir(".")
-
 	if err == nil {
 		for _, f := range files {
 			if strings.EqualFold(f.Name(), fileName) {
@@ -593,6 +597,5 @@ func findActualNugetFileName(fileName string) string {
 			}
 		}
 	}
-
 	return ""
 }
