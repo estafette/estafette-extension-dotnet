@@ -116,7 +116,6 @@ func main() {
 
 		if *nugetServerURL != "" && *nugetServerAPIKey != "" {
 			log.Printf("Adding the NuGet source.\n")
-			// log command with masked API key
 			log.Printf("> dotnet nuget add source --username travix-tooling-bot --password %v --store-password-in-clear-text --name travix %v\n", "********", *nugetServerURL)
 			foundation.RunCommandWithArgsWithoutLog(ctx, "dotnet", []string{"nuget", "add", "source", "--username", "travix-tooling-bot", "--password", *nugetServerAPIKey, "--store-password-in-clear-text", "--name", "travix", *nugetServerURL})
 		} else {
@@ -476,7 +475,11 @@ func main() {
 				argsForServer = append(argsForServer, argsForPackage...)
 				argsForServer = append(argsForServer, "--source", cred.url, "--api-key", cred.key)
 
-				foundation.RunCommandWithArgs(ctx, "dotnet", argsForServer)
+				// log the command for dotnet with argsForServer
+
+				flagsString := strings.Join(argsForServer, " ")
+				log.Printf("dotnet %v", flagsString)
+				foundation.RunCommandWithArgsWithoutLog(ctx, "dotnet", argsForServer)
 			}
 		}
 
