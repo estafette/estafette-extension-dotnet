@@ -292,6 +292,7 @@ func main() {
 		args = []string{
 			"sonarscanner",
 			"end",
+			fmt.Sprintf("/d:sonar.login=%s", *sonarQubeToken),
 		}
 
 		foundation.RunCommandWithArgs(ctx, "dotnet", args)
