@@ -25,6 +25,7 @@ type SonarQubeServerCredentials struct {
 // SonarQubeServerCredentialsAdditionalProperties has additional properties for the SonarQube Server credentials
 type SonarQubeServerCredentialsAdditionalProperties struct {
 	APIURL string `json:"apiUrl,omitempty"`
+	Token  string `json:"token,omitempty"`
 }
 
 // GetNugetServerCredentialsByName returns a credential with the specified name
