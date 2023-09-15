@@ -44,6 +44,7 @@ var (
 	publishSingleFile                  = kingpin.Flag("publishSingleFile", "Sets PublishSingleFile parameter for the publish action when true.").Envar("ESTAFETTE_EXTENSION_PUBLISH_SINGLE_FILE").Default("false").Bool()
 	publishTrimmed                     = kingpin.Flag("publishTrimmed", "Sets PublishTrimmed parameter for the publish action when true.").Envar("ESTAFETTE_EXTENSION_PUBLISH_TRIMMED").Default("false").Bool()
 	sonarQubeServerURL                 = kingpin.Flag("sonarQubeServerUrl", "The URL of the SonarQube Server to which we send analysis reports.").Envar("ESTAFETTE_EXTENSION_SONARQUBE_SERVER_URL").String()
+	sonarQubeToken                     = kingpin.Flag("sonarQubeToken", "The token for the SonarQube Server.").Envar("ESTAFETTE_EXTENSION_SONARQUBE_TOKEN").String()
 	sonarQubeServerCredentialsJSONPath = kingpin.Flag("sonarQubeServerCredentials-path", "Path to file with SonarQube Server credentials configured at server level, passed in to this trusted extension.").Default("/credentials/sonarqube_server.json").String()
 	sonarQubeServerName                = kingpin.Flag("sonarQubeServerName", "The name of the preferred SonarQube server from the preconfigured credentials.").Envar("ESTAFETTE_EXTENSION_SONARQUBE_SERVER_NAME").String()
 	sonarQubeCoverageExclusions        = kingpin.Flag("sonarQubeCoverageExclusions", "The path for the code to be excluded on SonarQube Scan.").Envar("ESTAFETTE_EXTENSION_SONARQUBE_COVERAGE_EXCLUSIONS").String()
@@ -237,11 +238,13 @@ func main() {
 					}
 
 					*sonarQubeServerURL = credential.AdditionalProperties.APIURL
+					*sonarQubeToken = credential.AdditionalProperties.Token
 				} else {
 					// Just pick the first
 					credential := credentials[0]
 
 					*sonarQubeServerURL = credential.AdditionalProperties.APIURL
+					*sonarQubeToken = credential.AdditionalProperties.Token
 				}
 			} else {
 				log.Fatal().Msg("The SonarQube server URL has to be specified to run the analysis.")
@@ -257,6 +260,7 @@ func main() {
 			"begin",
 			fmt.Sprintf("/key:%s", solutionName),
 			fmt.Sprintf("/d:sonar.host.url=%s", *sonarQubeServerURL),
+			fmt.Sprintf("/d:sonar.login=%s", *sonarQubeToken),
 			"/d:sonar.cs.opencover.reportsPaths=\"**\\coverage.opencover.xml\"",
 			fmt.Sprintf("/d:sonar.coverage.exclusions=\"%s\"", *sonarQubeCoverageExclusions),
 		}
@@ -288,6 +292,7 @@ func main() {
 		args = []string{
 			"sonarscanner",
 			"end",
+			fmt.Sprintf("/d:sonar.login=%s", *sonarQubeToken),
 		}
 
 		foundation.RunCommandWithArgs(ctx, "dotnet", args)
