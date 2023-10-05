@@ -167,6 +167,31 @@ stages:
         - SDK_VERSION_TAG
         - OPENJDK_PACKAGE
 
+      bake-8.0:
+        image: extensions/docker:dev
+        action: build
+        container: dotnet
+        dockerfile: Dockerfile.8.0
+        repositories:
+        - extensions
+        path: ./publish
+        noCache: true
+        versionTagSuffix: v8.0-sdk
+        severity: critical
+        env:
+          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/sdk
+          SDK_VERSION_TAG: 8.0
+          OPENJDK_PACKAGE: openjdk-11-jdk
+        args:
+        - DOCKER_REPOSITORY
+        - SDK_VERSION_TAG
+        - OPENJDK_PACKAGE
+        dontExpand:
+        - PATH
+        - DOCKER_REPOSITORY
+        - SDK_VERSION_TAG
+        - OPENJDK_PACKAGE
+
   check-containers:
     parallelStages:
       check-efficiency-3.1:
@@ -183,10 +208,9 @@ stages:
         severity: critical
         repositories:
         - eu.gcr.io/travix-com
+        - extensions
         container: dotnet
         versionTagSuffix: v3.1-sdk
-        repositories:
-        - extensions
 
       check-efficiency-3.1-alpine:
         image: extensions/docker:stable
@@ -202,10 +226,9 @@ stages:
         severity: critical
         repositories:
         - eu.gcr.io/travix-com
+        - extensions
         container: dotnet
         versionTagSuffix: v3.1-alpine-sdk
-        repositories:
-        - extensions
 
       check-efficiency-5.0:
         image: extensions/docker:stable
@@ -221,10 +244,9 @@ stages:
         severity: critical
         repositories:
         - eu.gcr.io/travix-com
+        - extensions
         container: dotnet
         versionTagSuffix: v5.0-sdk
-        repositories:
-        - extensions
 
       check-efficiency-6.0:
         image: extensions/docker:stable
@@ -240,10 +262,9 @@ stages:
         severity: critical
         repositories:
         - eu.gcr.io/travix-com
+        - extensions
         container: dotnet
         versionTagSuffix: v6.0-sdk
-        repositories:
-        - extensions
 
       check-efficiency-7.0:
         image: extensions/docker:stable
@@ -259,10 +280,27 @@ stages:
         severity: critical
         repositories:
         - eu.gcr.io/travix-com
+        - extensions
         container: dotnet
         versionTagSuffix: v7.0-sdk
+
+      check-efficiency-8.0:
+        image: extensions/docker:stable
+        action: dive
+        container: dotnet
+        versionTagSuffix: v8.0-sdk
         repositories:
         - extensions
+
+      vulnerability-scan-8.0:
+        image: extensions/docker:stable
+        action: trivy
+        severity: critical
+        repositories:
+        - eu.gcr.io/travix-com
+        - extensions
+        container: dotnet
+        versionTagSuffix: v8.0-sdk
 
   push:
     parallelStages:
@@ -317,6 +355,15 @@ stages:
         container: dotnet
         noCache: true
         versionTagSuffix: v7.0-sdk
+        repositories:
+        - extensions
+
+      push-container-image-8.0:
+        image: extensions/docker:dev
+        action: push
+        container: dotnet
+        noCache: true
+        versionTagSuffix: v8.0-sdk
         repositories:
         - extensions
 
@@ -398,6 +445,16 @@ releases:
             tags:
             - 7.0-dev
 
+          tag-container-image-8.0:
+            image: extensions/docker:dev
+            action: tag
+            container: dotnet
+            versionTagSuffix: v8.0-sdk
+            repositories:
+            - extensions
+            tags:
+            - 7.0-dev
+
       slack-notify:
         image: extensions/slack-build-status:dev
         workspace: estafette
@@ -470,6 +527,16 @@ releases:
             - extensions
             tags:
             - 7.0-stable
+
+          tag-container-image-8.0:
+            image: extensions/docker:dev
+            action: tag
+            container: dotnet
+            versionTagSuffix: v8.0-sdk
+            repositories:
+            - extensions
+            tags:
+            - 8.0-stable
 
       slack-notify:
         image: extensions/slack-build-status:dev
