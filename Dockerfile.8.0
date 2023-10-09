@@ -12,9 +12,9 @@ RUN grep security /etc/apt/sources.list | tee /etc/apt/security.sources.list && 
     apt-get upgrade -y -o Dir::Etc::SourceList=/etc/apt/security.sources.list && \
     apt-get install -yq \
         $OPENJDK_PACKAGE && \
-    apt-get clean && rm -rf /var/lib/apt/lists/* && \
     java -version && \
-    dotnet tool install --global --version 5.4.0 dotnet-sonarscanner
+    dotnet tool install --global --version 5.4.0 dotnet-sonarscanner && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 ENV PATH="$PATH:/root/.dotnet/tools" \
     ESTAFETTE_LOG_FORMAT="console"
