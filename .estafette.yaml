@@ -453,7 +453,7 @@ releases:
             repositories:
             - extensions
             tags:
-            - 7.0-dev
+            - 8.0-dev
 
       slack-notify:
         image: extensions/slack-build-status:dev
