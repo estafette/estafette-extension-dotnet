@@ -180,7 +180,7 @@ stages:
         severity: critical
         env:
           DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/sdk
-          SDK_VERSION_TAG: 8.0.100-rc.1
+          SDK_VERSION_TAG: 8.0-bookworm-slim
           OPENJDK_PACKAGE: openjdk-17-jdk
         args:
         - DOCKER_REPOSITORY
