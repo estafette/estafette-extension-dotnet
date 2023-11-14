@@ -338,6 +338,8 @@ func main() {
 			*configuration,
 			"--runtime",
 			*runtimeID,
+			"--self-contained",
+			"true",
 			"--output",
 			*outputFolder,
 			*project,
