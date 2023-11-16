@@ -34,6 +34,7 @@ var (
 	forceRestore                       = kingpin.Flag("forceRestore", "Execute the restore on every action.").Envar("ESTAFETTE_EXTENSION_FORCE_RESTORE").Default("false").Bool()
 	forceBuild                         = kingpin.Flag("forceBuild", "Execute the build on every action.").Envar("ESTAFETTE_EXTENSION_FORCE_BUILD").Default("false").Bool()
 	outputFolder                       = kingpin.Flag("outputFolder", "The folder into which the publish output is generated.").Envar("ESTAFETTE_EXTENSION_OUTPUT_FOLDER").String()
+	packagesFolder                     = kingpin.Flag("packagesFolder", "The folder in which the NuGet packages to be published will be searched.").Envar("ESTAFETTE_EXTENSION_PACKAGES_FOLDER").String()
 	nugetSources                       = kingpin.Flag("nugetSources", "String array of nuget sources to restore from.").Envar("ESTAFETTE_EXTENSION_SOURCES").String()
 	nugetServerURL                     = kingpin.Flag("nugetServerUrl", "The URL of the NuGet server.").Envar("ESTAFETTE_EXTENSION_NUGET_SERVER_URL").String()
 	nugetServerAPIKey                  = kingpin.Flag("nugetServerApiKey", "The API key of the NuGet server.").Envar("ESTAFETTE_EXTENSION_NUGET_SERVER_API_KEY").String()
@@ -411,6 +412,7 @@ func main() {
 		// Customizations.
 		// image: extensions/dotnet:stable
 		// action: push-nuget
+		// packagesFolder: MyProject/BuildOutput
 		// nugetServerUrl: https://nuget.mycompany.com
 		// nugetServerApikey: 3a4cdeca-3d5b-41a2-ac59-ae4b5c5eaece
 		// nugetSkipDuplicate: true
@@ -445,17 +447,22 @@ func main() {
 			nugetPushCredentials = append(nugetPushCredentials, nugetCredentials{url: *nugetServerURL, key: *nugetServerAPIKey})
 		}
 
-		srcPath := filepath.Join(workingDir, "src")
+		packagesBasePath := *packagesFolder
+		if packagesBasePath == "" {
+			packagesBasePath = filepath.Join(workingDir, "src")
+		}
 
 		var files []string
-		err := filepath.Walk(srcPath, func(path string, f os.FileInfo, _ error) error {
+		err := filepath.Walk(packagesBasePath, func(path string, f os.FileInfo, _ error) error {
 			if !f.IsDir() {
 				if filepath.Ext(path) == ".nupkg" {
 					files = append(files, path)
 				}
 			}
+
 			return nil
 		})
+
 		if err != nil {
 			log.Fatal().Err(err).Msg("An error occurred while searching for .nupkg files.")
 		}
