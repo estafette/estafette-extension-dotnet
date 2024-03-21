@@ -160,7 +160,7 @@ func main() {
 			"build",
 			"--configuration",
 			*configuration,
-			"--property:IncludeSourceRevisionInInformationalVersion=false",
+			"/p:IncludeSourceRevisionInInformationalVersion=false",
 		}
 
 		if *buildVersion != "" {
