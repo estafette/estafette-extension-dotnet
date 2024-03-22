@@ -160,11 +160,11 @@ func main() {
 			"build",
 			"--configuration",
 			*configuration,
-			"/p:IncludeSourceRevisionInInformationalVersion=false",
+			"--property:IncludeSourceRevisionInInformationalVersion=false",
 		}
 
 		if *buildVersion != "" {
-			args = append(args, fmt.Sprintf("/p:Version=%s", *buildVersion))
+			args = append(args, fmt.Sprintf("--property:Version=%s", *buildVersion))
 		}
 
 		if !*forceRestore {
