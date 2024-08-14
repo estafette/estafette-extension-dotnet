@@ -428,7 +428,7 @@ func main() {
 		var nugetPushCredentials []nugetCredentials
 		// Determine the NuGet server credentials
 		// If nugetServerURL and nugetServerAPIKey are explicitly specified, we use those.
-		// Otherwise, we automatically push to both GitHub.
+		// Otherwise, we automatically push to GitHub.
 		if *nugetServerURL == "" || *nugetServerAPIKey == "" {
 			// use mounted credential file if present instead of relying on an envvar
 			//nolint:errorcheck
