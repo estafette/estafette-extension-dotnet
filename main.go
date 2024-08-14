@@ -428,7 +428,7 @@ func main() {
 		var nugetPushCredentials []nugetCredentials
 		// Determine the NuGet server credentials
 		// If nugetServerURL and nugetServerAPIKey are explicitly specified, we use those.
-		// Otherwise, we automatically push to both GitHub and MyGet. This is temporary, until we finish the transition to GitHub packages.
+		// Otherwise, we automatically push to both GitHub.
 		if *nugetServerURL == "" || *nugetServerAPIKey == "" {
 			// use mounted credential file if present instead of relying on an envvar
 			//nolint:errorcheck
@@ -438,8 +438,6 @@ func main() {
 
 			if foundation.FileExists(*nugetServerCredentialsJSONPath) {
 				url, key := getNugetServerCredentialsFromFile(*nugetServerCredentialsJSONPath, "github-nuget")
-				nugetPushCredentials = append(nugetPushCredentials, nugetCredentials{url: url, key: key})
-				url, key = getNugetServerCredentialsFromFile(*nugetServerCredentialsJSONPath, "myget")
 				nugetPushCredentials = append(nugetPushCredentials, nugetCredentials{url: url, key: key})
 			} else {
 				log.Fatal().Msg("The NuGet server URL and API key have to be specified to push a package.")
