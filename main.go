@@ -97,11 +97,7 @@ func main() {
 		configFileName := "nuget.config"
 		actualFileName := findActualNugetFileName(configFileName)
 		if foundation.FileExists(actualFileName) {
-			log.Printf("WARNING: NuGet.config was found in the repository, deleting it.\n")
-			log.Printf("The NuGet.config should be deleted from the repository, to make sure that only the common default sources are used.\n")
-			if err := os.Remove(actualFileName); err != nil {
-				log.Fatal().Err(err).Msgf("Failed to remove file %s", actualFileName)
-			}
+			log.Fatal().Err(err).Msgf("The NuGet.config file was found in the repository and should be deleted. So then the common default sources are used. ")
 		}
 
 		if *nugetServerURL == "" || *nugetServerAPIKey == "" {
