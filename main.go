@@ -97,11 +97,7 @@ func main() {
 		configFileName := "nuget.config"
 		actualFileName := findActualNugetFileName(configFileName)
 		if foundation.FileExists(actualFileName) {
-			log.Printf("WARNING: NuGet.config was found in the repository, deleting it.\n")
-			log.Printf("The NuGet.config should be deleted from the repository, to make sure that only the common default sources are used.\n")
-			if err := os.Remove(actualFileName); err != nil {
-				log.Fatal().Err(err).Msgf("Failed to remove file %s", actualFileName)
-			}
+			log.Fatal().Err(err).Msgf("The NuGet.config file was found in the repository and should be deleted. So then the common default sources are used. ")
 		}
 
 		if *nugetServerURL == "" || *nugetServerAPIKey == "" {
@@ -428,7 +424,7 @@ func main() {
 		var nugetPushCredentials []nugetCredentials
 		// Determine the NuGet server credentials
 		// If nugetServerURL and nugetServerAPIKey are explicitly specified, we use those.
-		// Otherwise, we automatically push to both GitHub and MyGet. This is temporary, until we finish the transition to GitHub packages.
+		// Otherwise, we automatically push to GitHub.
 		if *nugetServerURL == "" || *nugetServerAPIKey == "" {
 			// use mounted credential file if present instead of relying on an envvar
 			//nolint:errorcheck
@@ -438,8 +434,6 @@ func main() {
 
 			if foundation.FileExists(*nugetServerCredentialsJSONPath) {
 				url, key := getNugetServerCredentialsFromFile(*nugetServerCredentialsJSONPath, "github-nuget")
-				nugetPushCredentials = append(nugetPushCredentials, nugetCredentials{url: url, key: key})
-				url, key = getNugetServerCredentialsFromFile(*nugetServerCredentialsJSONPath, "myget")
 				nugetPushCredentials = append(nugetPushCredentials, nugetCredentials{url: url, key: key})
 			} else {
 				log.Fatal().Msg("The NuGet server URL and API key have to be specified to push a package.")
