@@ -192,115 +192,30 @@ stages:
         - SDK_VERSION_TAG
         - OPENJDK_PACKAGE
 
-  check-containers:
-    parallelStages:
-      check-efficiency-3.1:
-        image: extensions/docker:stable
-        action: dive
+      bake-9.0:
+        image: extensions/docker:dev
+        action: build
         container: dotnet
-        versionTagSuffix: v3.1-sdk
+        dockerfile: Dockerfile.9.0
         repositories:
         - extensions
-
-      vulnerability-scan-3.1:
-        image: extensions/docker:stable
-        action: trivy
+        path: ./publish
+        noCache: true
+        versionTagSuffix: v9.0-sdk
         severity: critical
-        repositories:
-        - eu.gcr.io/travix-com
-        - extensions
-        container: dotnet
-        versionTagSuffix: v3.1-sdk
-
-      check-efficiency-3.1-alpine:
-        image: extensions/docker:stable
-        action: dive
-        container: dotnet
-        versionTagSuffix: v3.1-alpine-sdk
-        repositories:
-        - extensions
-
-      vulnerability-scan-3.1-alpine:
-        image: extensions/docker:stable
-        action: trivy
-        severity: critical
-        repositories:
-        - eu.gcr.io/travix-com
-        - extensions
-        container: dotnet
-        versionTagSuffix: v3.1-alpine-sdk
-
-      check-efficiency-5.0:
-        image: extensions/docker:stable
-        action: dive
-        container: dotnet
-        versionTagSuffix: v5.0-sdk
-        repositories:
-        - extensions
-
-      vulnerability-scan-5.0:
-        image: extensions/docker:stable
-        action: trivy
-        severity: critical
-        repositories:
-        - eu.gcr.io/travix-com
-        - extensions
-        container: dotnet
-        versionTagSuffix: v5.0-sdk
-
-      check-efficiency-6.0:
-        image: extensions/docker:stable
-        action: dive
-        container: dotnet
-        versionTagSuffix: v6.0-sdk
-        repositories:
-        - extensions
-
-      vulnerability-scan-6.0:
-        image: extensions/docker:stable
-        action: trivy
-        severity: critical
-        repositories:
-        - eu.gcr.io/travix-com
-        - extensions
-        container: dotnet
-        versionTagSuffix: v6.0-sdk
-
-      check-efficiency-7.0:
-        image: extensions/docker:stable
-        action: dive
-        container: dotnet
-        versionTagSuffix: v7.0-sdk
-        repositories:
-        - extensions
-
-      vulnerability-scan-7.0:
-        image: extensions/docker:stable
-        action: trivy
-        severity: critical
-        repositories:
-        - eu.gcr.io/travix-com
-        - extensions
-        container: dotnet
-        versionTagSuffix: v7.0-sdk
-
-      check-efficiency-8.0:
-        image: extensions/docker:stable
-        action: dive
-        container: dotnet
-        versionTagSuffix: v8.0-sdk
-        repositories:
-        - extensions
-
-      vulnerability-scan-8.0:
-        image: extensions/docker:stable
-        action: trivy
-        severity: critical
-        repositories:
-        - eu.gcr.io/travix-com
-        - extensions
-        container: dotnet
-        versionTagSuffix: v8.0-sdk
+        env:
+          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/sdk
+          SDK_VERSION_TAG: 9.0-bookworm-slim
+          OPENJDK_PACKAGE: openjdk-17-jdk
+        args:
+        - DOCKER_REPOSITORY
+        - SDK_VERSION_TAG
+        - OPENJDK_PACKAGE
+        dontExpand:
+        - PATH
+        - DOCKER_REPOSITORY
+        - SDK_VERSION_TAG
+        - OPENJDK_PACKAGE
 
   push:
     parallelStages:
@@ -364,6 +279,15 @@ stages:
         container: dotnet
         noCache: true
         versionTagSuffix: v8.0-sdk
+        repositories:
+        - extensions
+
+      push-container-image-9.0:
+        image: extensions/docker:dev
+        action: push
+        container: dotnet
+        noCache: true
+        versionTagSuffix: v9.0-sdk
         repositories:
         - extensions
 
@@ -455,6 +379,16 @@ releases:
             tags:
             - 8.0-dev
 
+          tag-container-image-9.0:
+            image: extensions/docker:dev
+            action: tag
+            container: dotnet
+            versionTagSuffix: v9.0-sdk
+            repositories:
+            - extensions
+            tags:
+            - 9.0-dev
+
       slack-notify:
         image: extensions/slack-build-status:dev
         workspace: estafette
@@ -537,6 +471,16 @@ releases:
             - extensions
             tags:
             - 8.0-stable
+
+          tag-container-image-9.0:
+            image: extensions/docker:dev
+            action: tag
+            container: dotnet
+            versionTagSuffix: v9.0-sdk
+            repositories:
+            - extensions
+            tags:
+            - 9.0-stable
 
       slack-notify:
         image: extensions/slack-build-status:dev
