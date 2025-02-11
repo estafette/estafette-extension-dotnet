@@ -217,6 +217,31 @@ stages:
         - SDK_VERSION_TAG
         - OPENJDK_PACKAGE
 
+      bake-9.0-node:
+        image: extensions/docker:dev
+        action: build
+        container: dotnet
+        dockerfile: Dockerfile.9.0-node
+        repositories:
+        - extensions
+        path: ./publish
+        noCache: true
+        versionTagSuffix: v9.0-node-sdk
+        severity: critical
+        env:
+          DOCKER_REPOSITORY: mcr.microsoft.com/dotnet/sdk
+          SDK_VERSION_TAG: 9.0-bookworm-slim
+          OPENJDK_PACKAGE: openjdk-17-jdk
+        args:
+        - DOCKER_REPOSITORY
+        - SDK_VERSION_TAG
+        - OPENJDK_PACKAGE
+        dontExpand:
+        - PATH
+        - DOCKER_REPOSITORY
+        - SDK_VERSION_TAG
+        - OPENJDK_PACKAGE
+
   push:
     parallelStages:
       push-container-image-3.0:
@@ -288,6 +313,15 @@ stages:
         container: dotnet
         noCache: true
         versionTagSuffix: v9.0-sdk
+        repositories:
+        - extensions
+
+      push-container-image-9.0-node:
+        image: extensions/docker:dev
+        action: push
+        container: dotnet
+        noCache: true
+        versionTagSuffix: v9.0-node-sdk
         repositories:
         - extensions
 
@@ -389,6 +423,16 @@ releases:
             tags:
             - 9.0-dev
 
+          tag-container-image-9.0-node:
+            image: extensions/docker:dev
+            action: tag
+            container: dotnet
+            versionTagSuffix: v9.0-node-sdk
+            repositories:
+            - extensions
+            tags:
+            - 9.0-node-dev
+
       slack-notify:
         image: extensions/slack-build-status:dev
         workspace: estafette
@@ -481,6 +525,16 @@ releases:
             - extensions
             tags:
             - 9.0-stable
+
+          tag-container-image-9.0-node:
+            image: extensions/docker:dev
+            action: tag
+            container: dotnet
+            versionTagSuffix: v9.0-node-sdk
+            repositories:
+            - extensions
+            tags:
+            - 9.0-node-stable
 
       slack-notify:
         image: extensions/slack-build-status:dev
