@@ -21,6 +21,6 @@ RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - && apt-get install -
 ENV PATH="$PATH:/root/.dotnet/tools" \
     ESTAFETTE_LOG_FORMAT="console"
 
-# COPY estafette-extension-dotnet /
+COPY estafette-extension-dotnet /
 
 ENTRYPOINT ["/estafette-extension-dotnet"]
