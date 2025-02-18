@@ -193,3 +193,12 @@ Or we can explicitly configure the URL and the API Key, that way we're not using
     nugetServerApiKey: 3a4cdeca-3d5b-41a2-ac59-ae4b5c5eaece
 ```
 
+You can also skip duplicates by adding this as step option
+
+```
+push-nuget:
+    image: extensions/dotnet:2.2-stable
+    action: push-nuget
+    nugetSkipDuplicate: true
+```
+
